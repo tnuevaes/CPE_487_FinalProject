@@ -31,3 +31,5 @@ I pledge my honor that I have abided by the Stevens Honor System
         - BTNU = Exponentiation Operation
         - BTND = Modulo Operation
 - two bit binary calculations 
+
+- Running Operations
