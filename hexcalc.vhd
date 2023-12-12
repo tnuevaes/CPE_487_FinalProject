@@ -68,7 +68,7 @@ BEGIN
 		sm_ck_pr : PROCESS (bt_clr, sm_clk) -- state machine clock process
 		BEGIN
 			IF bt_clr = '1' THEN -- reset to known state
-				acc <= X"0000";
+				acc <= X"0000";  
 				operand <= X"0000";
 				pr_state <= ENTER_ACC;
 			ELSIF rising_edge (sm_clk) THEN -- on rising clock edge
@@ -81,18 +81,18 @@ BEGIN
 		-- determines output of state machine and next state
 		sm_comb_pr : PROCESS (kp_hit, kp_value, bt_plus, bt_eq, acc, operand, pr_state)
 		BEGIN
-			nx_acc <= acc; -- default values of nx_acc, nx_operand & display
-			nx_operand <= operand;
+			nx_acc <= acc; -- Set value of nx_acc to initial keypress
+			nx_operand <= operand; --Set value of nx_operant to value of second operand keypress
 			display <= acc;
 			CASE pr_state IS -- depending on present state...
 				WHEN ENTER_ACC => -- waiting for next digit in 1st operand entry
 					IF kp_hit = '1' THEN
-						nx_acc <= acc(11 DOWNTO 0) & kp_value;
+						nx_acc <= acc(11 DOWNTO 0) & kp_value; -- Set nx_acc to value of full number operand
 						nx_state <= ACC_RELEASE;
-					ELSIF bt_plus = '1' THEN
-						nx_state <= START_OP;
+					ELSIF bt_plus = '1' THEN  -- Choices
+						nx_state <= START_OP;                                      -- FOR PROJECT: Nested if statements for multiple operations
 						choice <= '1';
-					ELSIF bt_sub ='1'then
+					ELSIF bt_sub ='1'then   -- Choices
 					   nx_state <= START_OP;
 					   choice <='0';
 					ELSE
@@ -122,7 +122,7 @@ BEGIN
 						nx_acc <= acc + operand;
 						nx_state <= SHOW_RESULT;
 					ELSIF (bt_eq = '1'and choice= '0')then
-					   nx_acc <= acc - operand;
+					   nx_acc <= acc - operand;                                         -- FOR PROJECT: Nested if statements for multiple operations
 					   nx_state <= SHOW_RESULT;
 					ELSIF kp_hit = '1' THEN
 						nx_operand <= operand(11 DOWNTO 0) & kp_value;
