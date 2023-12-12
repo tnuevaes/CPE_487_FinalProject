@@ -20,5 +20,7 @@ I pledge my honor that I have abided by the Stevens Honor System
     - Modulo
     - Remainder
 
-- Slide switches to toggle between addition and subtraction operations.
+- Slide switches to toggle between addition and subtraction operations
+    - Switch 0
+        - BTNU 
 - two bit binary calculations 
