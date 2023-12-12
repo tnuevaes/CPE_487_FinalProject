@@ -36,10 +36,11 @@ BEGIN
 	       "0111000" WHEN data4 = "1111" ELSE -- F
 	       "1111111";
 	-- Turn on anode of 7-segment display addressed by 3-bit digit selector dig
-	anode <= "11111110" WHEN dig = "000" ELSE -- 0
-	         "11111101" WHEN dig = "001" ELSE -- 1
-	         "11111011" WHEN dig = "010" ELSE -- 2
-	         "11110111" WHEN dig = "011" ELSE -- 3
+	anode <= 
+	         "11111110" WHEN dig = "000" AND data /= X"0000" ELSE -- 0
+	         "11111101" WHEN dig = "001" AND data(15 downto 4) /= X"000" ELSE -- 1
+	         "11111011" WHEN dig = "010" AND data(15 downto 8) /= X"00" ELSE -- 2
+	         "11110111" WHEN dig = "011" AND data(15 downto 12)/= X"0" ELSE -- 3
 --	         "11101111" WHEN dig = "100" ELSE -- 4
 --	         "11011111" WHEN dig = "101" ELSE -- 5 
 --	         "10111111" WHEN dig = "110" ELSE -- 6

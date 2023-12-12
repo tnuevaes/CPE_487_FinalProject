@@ -5,13 +5,15 @@ USE IEEE.STD_LOGIC_UNSIGNED.ALL;
 ENTITY hexcalc IS
 	PORT (
 		clk_50MHz : IN STD_LOGIC; -- system clock (50 MHz)
-		SEG7_anode : OUT STD_LOGIC_VECTOR (7 DOWNTO 0); -- anodes of eight 7-seg displays
+		SEG7_anode : OUT STD_LOGIC_VECTOR (7 DOWNTO 0); -- anodes of four 7-seg displays
 		SEG7_seg : OUT STD_LOGIC_VECTOR (6 DOWNTO 0); -- common segments of 7-seg displays
 		bt_clr : IN STD_LOGIC; -- calculator "clear" button
 		bt_plus : IN STD_LOGIC; -- calculator "+" button
-		bt_eq : IN STD_LOGIC; -- calculator "=" button
+		bt_sub : IN STD_LOGIC; -- calculator "-" button
+		bt_eq : IN STD_LOGIC; 
 		KB_col : OUT STD_LOGIC_VECTOR (4 DOWNTO 1); -- keypad column pins
-	KB_row : IN STD_LOGIC_VECTOR (4 DOWNTO 1)); -- keypad row pins
+	    KB_row : IN STD_LOGIC_VECTOR (4 DOWNTO 1)); -- keypad row pins
+	   
 END hexcalc;
 
 ARCHITECTURE Behavioral OF hexcalc IS
@@ -42,6 +44,7 @@ ARCHITECTURE Behavioral OF hexcalc IS
 	TYPE state IS (ENTER_ACC, ACC_RELEASE, START_OP, OP_RELEASE, 
 	ENTER_OP, SHOW_RESULT); -- state machine states
 	SIGNAL pr_state, nx_state : state; -- present and next states
+	SIGNAL choice: STD_LOGIC;
 BEGIN
 	ck_proc : PROCESS (clk_50MHz)
 	BEGIN
@@ -88,6 +91,10 @@ BEGIN
 						nx_state <= ACC_RELEASE;
 					ELSIF bt_plus = '1' THEN
 						nx_state <= START_OP;
+						choice <= '1';
+					ELSIF bt_sub ='1'then
+					   nx_state <= START_OP;
+					   choice <='0';
 					ELSE
 						nx_state <= ENTER_ACC;
 					END IF;
@@ -111,9 +118,12 @@ BEGIN
 					END IF;
 				WHEN ENTER_OP => -- waiting for next digit in 2nd operand
 					display <= operand;
-					IF bt_eq = '1' THEN
+					IF (bt_eq = '1' and choice='1') THEN
 						nx_acc <= acc + operand;
 						nx_state <= SHOW_RESULT;
+					ELSIF (bt_eq = '1'and choice= '0')then
+					   nx_acc <= acc - operand;
+					   nx_state <= SHOW_RESULT;
 					ELSIF kp_hit = '1' THEN
 						nx_operand <= operand(11 DOWNTO 0) & kp_value;
 						nx_state <= OP_RELEASE;
