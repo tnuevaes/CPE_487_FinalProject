@@ -8,3 +8,17 @@ I pledge my honor that I have abided by the Stevens Honor System
 
 - Study Lab 4 base code for calculator
 - Implement additional features to calculator
+
+### Expected Behavior
+- Base operations
+- Addition
+- Subtraction
+- Additional operations
+- Multiplication
+- Division
+- Exponentiation
+- Modulo
+- Remainder
+
+- Slide switches to toggle between addition and subtraction operations.
+- two bit binary calculations 
