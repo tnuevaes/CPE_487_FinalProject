@@ -22,5 +22,12 @@ I pledge my honor that I have abided by the Stevens Honor System
 
 - Slide switches to toggle between addition and subtraction operations
     - Switch 0
-        - BTNU 
+        - BTNU = Addition Operation
+        - BTND = Subtraction Operation
+    - Switch 1
+        - BTNU = Multiplication Operation
+        - BTND = Division Operation
+    - Switch 2
+        - BTNU = Exponentiation Operation
+        - BTND = Modulo Operation
 - two bit binary calculations 
