@@ -11,14 +11,14 @@ I pledge my honor that I have abided by the Stevens Honor System
 
 ### Expected Behavior
 - Base operations
-- Addition
-- Subtraction
+    - Addition
+    - Subtraction
 - Additional operations
-- Multiplication
-- Division
-- Exponentiation
-- Modulo
-- Remainder
+    - Multiplication
+    - Division
+    - Exponentiation
+    - Modulo
+    - Remainder
 
 - Slide switches to toggle between addition and subtraction operations.
 - two bit binary calculations 
