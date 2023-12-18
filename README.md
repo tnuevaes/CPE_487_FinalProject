@@ -29,8 +29,7 @@ I pledge my honor that I have abided by the Stevens Honor System
         - BTND = Division Operation
     - Switch 2
         - BTNU = Exponentiation Operation
-        - BTND = Modulo Operation
-- two bit binary calculations 
+        - BTND = Modulo Operation 
 
 - Running Operations
     - Allow the calculator to perform running operations (Continuous operations based on previous computation results)
