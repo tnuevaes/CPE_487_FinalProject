@@ -161,7 +161,6 @@ BEGIN
 							nx_state <= OP_RELEASE;
 						ELSE nx_state <= ENTER_OP;
 						END IF;
-						--Testing commits
 					END IF;
 				WHEN SHOW_RESULT => -- display result of addition
 					IF kp_hit = '1' THEN
