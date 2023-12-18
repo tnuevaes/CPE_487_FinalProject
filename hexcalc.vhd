@@ -13,6 +13,8 @@ ENTITY hexcalc IS
 		bt_eq : IN STD_LOGIC; 
 		KB_col : OUT STD_LOGIC_VECTOR (4 DOWNTO 1); -- keypad column pins
 	    KB_row : IN STD_LOGIC_VECTOR (4 DOWNTO 1)); -- keypad row pins
+		SW0 : IN STD_LOGIC; -- initializing the first sw
+		SW1: IN STD_LOGIC; -- initializing the second sw
 	   
 END hexcalc;
 
@@ -86,6 +88,7 @@ BEGIN
 			display <= acc;
 			CASE pr_state IS -- depending on present state...
 				WHEN ENTER_ACC => -- waiting for next digit in 1st operand entry
+					--Keep same logic
 					IF kp_hit = '1' THEN
 						nx_acc <= acc(11 DOWNTO 0) & kp_value; -- Set nx_acc to value of full number operand
 						nx_state <= ACC_RELEASE;
@@ -118,16 +121,46 @@ BEGIN
 					END IF;
 				WHEN ENTER_OP => -- waiting for next digit in 2nd operand
 					display <= operand;
-					IF (bt_eq = '1' and choice='1') THEN
-						nx_acc <= acc + operand;
+					-- Only need to check here for SW0 and SW1 since we can use choice for different calculations
+					-- Logic for Addition and Subtraction no switches on
+					IF (SW0 = '0' AND SW1 = '0') THEN
+						IF (bt_eq = '1' and choice='1') THEN
+							nx_acc <= acc + operand;
+							nx_state <= SHOW_RESULT;
+						ELSIF (bt_eq = '1'and choice= '0')then
+						nx_acc <= acc - operand;                                         -- FOR PROJECT: Nested if statements for multiple operations
 						nx_state <= SHOW_RESULT;
-					ELSIF (bt_eq = '1'and choice= '0')then
-					   nx_acc <= acc - operand;                                         -- FOR PROJECT: Nested if statements for multiple operations
-					   nx_state <= SHOW_RESULT;
-					ELSIF kp_hit = '1' THEN
-						nx_operand <= operand(11 DOWNTO 0) & kp_value;
-						nx_state <= OP_RELEASE;
-					ELSE nx_state <= ENTER_OP;
+						ELSIF kp_hit = '1' THEN
+							nx_operand <= operand(11 DOWNTO 0) & kp_value;
+							nx_state <= OP_RELEASE;
+						ELSE nx_state <= ENTER_OP;
+						END IF;
+					ELSIF (SW0 = '1' AND SW1 = '0') THEN
+					-- Logic for Multiplication and Division SW1 ON
+						IF (bt_eq = '1' and choice='1') THEN
+							nx_acc <= acc * operand;
+							nx_state <= SHOW_RESULT;
+						ELSIF (bt_eq = '1'and choice= '0')then
+							nx_acc <= acc / operand;                                         
+							nx_state <= SHOW_RESULT;
+						ELSIF kp_hit = '1' THEN
+							nx_operand <= operand(11 DOWNTO 0) & kp_value;
+							nx_state <= OP_RELEASE;
+						ELSE nx_state <= ENTER_OP;
+						END IF;
+					ELSIF (SW0 = '0' AND SW1 = '1') THEN
+					-- Logic for Exponential and Modulo calculation
+						IF (bt_eq = '1' and choice='1') THEN
+							nx_acc <= -- logic for exponential calculation
+							nx_state <= SHOW_RESULT;
+						ELSIF (bt_eq = '1'and choice= '0')then
+							nx_acc <= -- Logic for modulo calculation                                        
+							nx_state <= SHOW_RESULT;
+						ELSIF kp_hit = '1' THEN
+							nx_operand <= operand(11 DOWNTO 0) & kp_value;
+							nx_state <= OP_RELEASE;
+						ELSE nx_state <= ENTER_OP;
+						END IF;
 					END IF;
 				WHEN SHOW_RESULT => -- display result of addition
 					IF kp_hit = '1' THEN
