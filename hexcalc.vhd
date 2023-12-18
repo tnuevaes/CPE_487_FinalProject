@@ -1,6 +1,5 @@
 LIBRARY IEEE;
 USE IEEE.STD_LOGIC_1164.ALL;
-USE IEEE.STD_LOGIC_UNSIGNED.ALL;
 USE IEEE.NUMERIC_STD.ALL;
 
 ENTITY hexcalc IS
@@ -126,10 +125,10 @@ BEGIN
 					-- Logic for Addition and Subtraction no switches on
 					IF (SW0 = '0' AND SW1 = '0') THEN
 						IF (bt_eq = '1' and choice='1') THEN
-							nx_acc <= acc + operand;
+							nx_acc <= std_logic_vector(unsigned(acc) + unsigned(operand));
 							nx_state <= SHOW_RESULT;
 						ELSIF (bt_eq = '1'and choice= '0')then
-						nx_acc <= acc - operand;                                         -- FOR PROJECT: Nested if statements for multiple operations
+						nx_acc <= std_logic_vector(unsigned(acc) - unsigned(operand));                                        -- FOR PROJECT: Nested if statements for multiple operations
 						nx_state <= SHOW_RESULT;
 						ELSIF kp_hit = '1' THEN
 							nx_operand <= operand(11 DOWNTO 0) & kp_value;
@@ -139,14 +138,10 @@ BEGIN
 					ELSIF (SW0 = '1' AND SW1 = '0') THEN
 					-- Logic for Multiplication and Division SW1 ON
 						IF (bt_eq = '1' and choice='1') THEN
-							nx_acc <= (acc) * (operand);
+							nx_acc <= std_logic_vector(unsigned(acc) * unsigned(operand));
 							nx_state <= SHOW_RESULT;
 						ELSIF (bt_eq = '1'and choice= '0')then
-<<<<<<< Updated upstream
-							nx_acc <= acc / operand;                                        
-=======
-							nx_acc <= (acc) + (operand);                                         
->>>>>>> Stashed changes
+							nx_acc <= std_logic_vector(unsigned(acc) / unsigned(operand));                                         
 							nx_state <= SHOW_RESULT;
 						ELSIF kp_hit = '1' THEN
 							nx_operand <= operand(11 DOWNTO 0) & kp_value;
@@ -156,10 +151,10 @@ BEGIN
 					ELSIF (SW0 = '0' AND SW1 = '1') THEN
 					-- Logic for Exponential and Modulo calculation
 						IF (bt_eq = '1' and choice='1') THEN
-							nx_acc <= acc + operand;                   --Exponentiation, acc^operand
+							nx_acc <= std_logic_vector(unsigned(acc) rem unsigned(operand));                   --Exponentiation, acc^operand
 							nx_state <= SHOW_RESULT;
 						ELSIF (bt_eq = '1'and choice= '0')then
-							nx_acc <= acc + operand;                   --Modulo
+							nx_acc <= std_logic_vector(unsigned(acc) mod unsigned(operand));                   --Modulo
 							nx_state <= SHOW_RESULT;
 						ELSIF kp_hit = '1' THEN
 							nx_operand <= operand(11 DOWNTO 0) & kp_value;
