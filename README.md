@@ -33,3 +33,4 @@ I pledge my honor that I have abided by the Stevens Honor System
 - two bit binary calculations 
 
 - Running Operations
+    - Allow the calculator to perform running operations (Continuous operations based on previous computation results)
