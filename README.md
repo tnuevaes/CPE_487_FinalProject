@@ -27,7 +27,7 @@ I pledge my honor that I have abided by the Stevens Honor System
 ### Slide Switch Toggle
 
     - Use slide switches to toggle between addition and subtraction operations
-    - Switch 0
+    - Switch 0 
         - BTNU = Addition Operation
         - BTND = Subtraction Operation
     - Switch 1

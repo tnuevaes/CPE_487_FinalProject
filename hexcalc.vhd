@@ -151,10 +151,10 @@ BEGIN
 					ELSIF (SW0 = '0' AND SW1 = '1') THEN
 					-- Logic for Exponential and Modulo calculation
 						IF (bt_eq = '1' and choice='1') THEN
-							nx_acc <= -- logic for exponential calculation
+							nx_acc <= acc ** operand;                   --Exponentiation, acc^operand
 							nx_state <= SHOW_RESULT;
 						ELSIF (bt_eq = '1'and choice= '0')then
-							nx_acc <= -- Logic for modulo calculation                                        
+							nx_acc <= acc mod operand;                   --Modulo
 							nx_state <= SHOW_RESULT;
 						ELSIF kp_hit = '1' THEN
 							nx_operand <= operand(11 DOWNTO 0) & kp_value;
