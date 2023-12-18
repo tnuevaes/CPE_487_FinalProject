@@ -39,8 +39,8 @@ ARCHITECTURE Behavioral OF hexcalc IS
 	SIGNAL cnt : unsigned (20 DOWNTO 0); -- counter to generate timing signals
 	SIGNAL kp_clk, kp_hit, sm_clk : std_logic;
 	SIGNAL kp_value : std_logic_vector (3 DOWNTO 0);
-	SIGNAL nx_acc, acc : std_logic_vector (31 DOWNTO 0); -- accumulated sum
-	SIGNAL nx_operand, operand : std_logic_vector (31 DOWNTO 0); -- operand
+	SIGNAL nx_acc, acc : std_logic_vector (15 DOWNTO 0); -- accumulated sum
+	SIGNAL nx_operand, operand : std_logic_vector (15 DOWNTO 0); -- operand
 	SIGNAL display : std_logic_vector (15 DOWNTO 0); -- value to be displayed
 	SIGNAL led_mpx : unsigned (2 DOWNTO 0); -- 7-seg multiplexing clock
 	TYPE state IS (ENTER_ACC, ACC_RELEASE, START_OP, OP_RELEASE, 
@@ -51,7 +51,7 @@ BEGIN
 	ck_proc : PROCESS (clk_50MHz)
 	BEGIN
 		IF rising_edge(clk_50MHz) THEN -- on rising edge of clock
-			cnt <= cnt + 1; -- increment counter
+			cnt <= unsigned(cnt) + 1; -- increment counter
 		END IF;
 	END PROCESS;
 	kp_clk <= cnt(15); -- keypad interrogation clock
@@ -70,8 +70,8 @@ BEGIN
 		sm_ck_pr : PROCESS (bt_clr, sm_clk) -- state machine clock process
 		BEGIN
 			IF bt_clr = '1' THEN -- reset to known state
-				acc <= X"00000000";  
-				operand <= X"00000000";
+				acc <= X"0000";  
+				operand <= X"0000";
 				pr_state <= ENTER_ACC;
 			ELSIF rising_edge (sm_clk) THEN -- on rising clock edge
 				pr_state <= nx_state; -- update present state
@@ -151,8 +151,8 @@ BEGIN
 					ELSIF (SW0 = '0' AND SW1 = '1') THEN
 					-- Logic for Exponential and Modulo calculation
 						IF (bt_eq = '1' and choice='1') THEN
-							nx_acc <= std_logic_vector(unsigned(acc) rem unsigned(operand));                   --Exponentiation, acc^operand
-							nx_state <= SHOW_RESULT;
+							nx_acc <= std_logic_vector(unsigned(acc) rem unsigned(operand));                   --remainder
+							nx_state <= SHOW_RESULT;                                              -- Additional Note: Create new final solved signal, not nx_acc to store larger product of operation
 						ELSIF (bt_eq = '1'and choice= '0')then
 							nx_acc <= std_logic_vector(unsigned(acc) mod unsigned(operand));                   --Modulo
 							nx_state <= SHOW_RESULT;
