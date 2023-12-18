@@ -30,19 +30,19 @@ ARCHITECTURE Behavioral OF hexcalc IS
 	END COMPONENT;
 	COMPONENT leddec16 IS
 		PORT (
-			dig : IN STD_LOGIC_VECTOR (2 DOWNTO 0);
+			dig : IN unsigned (2 DOWNTO 0);
 			data : IN STD_LOGIC_VECTOR (15 DOWNTO 0);
 			anode : OUT STD_LOGIC_VECTOR (7 DOWNTO 0);
 			seg : OUT STD_LOGIC_VECTOR (6 DOWNTO 0)
 		);
 	END COMPONENT;
-	SIGNAL cnt : std_logic_vector(20 DOWNTO 0); -- counter to generate timing signals
+	SIGNAL cnt : unsigned (20 DOWNTO 0); -- counter to generate timing signals
 	SIGNAL kp_clk, kp_hit, sm_clk : std_logic;
 	SIGNAL kp_value : std_logic_vector (3 DOWNTO 0);
-	SIGNAL nx_acc, acc : std_logic_vector (15 DOWNTO 0); -- accumulated sum
-	SIGNAL nx_operand, operand : std_logic_vector (15 DOWNTO 0); -- operand
+	SIGNAL nx_acc, acc : std_logic_vector (31 DOWNTO 0); -- accumulated sum
+	SIGNAL nx_operand, operand : std_logic_vector (31 DOWNTO 0); -- operand
 	SIGNAL display : std_logic_vector (15 DOWNTO 0); -- value to be displayed
-	SIGNAL led_mpx : STD_LOGIC_VECTOR (2 DOWNTO 0); -- 7-seg multiplexing clock
+	SIGNAL led_mpx : unsigned (2 DOWNTO 0); -- 7-seg multiplexing clock
 	TYPE state IS (ENTER_ACC, ACC_RELEASE, START_OP, OP_RELEASE, 
 	ENTER_OP, SHOW_RESULT); -- state machine states
 	SIGNAL pr_state, nx_state : state; -- present and next states
@@ -70,8 +70,8 @@ BEGIN
 		sm_ck_pr : PROCESS (bt_clr, sm_clk) -- state machine clock process
 		BEGIN
 			IF bt_clr = '1' THEN -- reset to known state
-				acc <= X"0000";  
-				operand <= X"0000";
+				acc <= X"00000000";  
+				operand <= X"00000000";
 				pr_state <= ENTER_ACC;
 			ELSIF rising_edge (sm_clk) THEN -- on rising clock edge
 				pr_state <= nx_state; -- update present state
