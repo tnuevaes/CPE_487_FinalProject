@@ -141,7 +141,7 @@ BEGIN
 							nx_acc <= acc * operand;
 							nx_state <= SHOW_RESULT;
 						ELSIF (bt_eq = '1'and choice= '0')then
-							nx_acc <= acc / operand;                                         
+							nx_acc <= acc / operand;                                        
 							nx_state <= SHOW_RESULT;
 						ELSIF kp_hit = '1' THEN
 							nx_operand <= operand(11 DOWNTO 0) & kp_value;
@@ -161,6 +161,7 @@ BEGIN
 							nx_state <= OP_RELEASE;
 						ELSE nx_state <= ENTER_OP;
 						END IF;
+						--Testing commits
 					END IF;
 				WHEN SHOW_RESULT => -- display result of addition
 					IF kp_hit = '1' THEN
