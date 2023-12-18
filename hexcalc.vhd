@@ -1,6 +1,7 @@
 LIBRARY IEEE;
 USE IEEE.STD_LOGIC_1164.ALL;
 USE IEEE.STD_LOGIC_UNSIGNED.ALL;
+USE IEEE.NUMERIC_STD.ALL;
 
 ENTITY hexcalc IS
 	PORT (
@@ -12,9 +13,9 @@ ENTITY hexcalc IS
 		bt_sub : IN STD_LOGIC; -- calculator "-" button
 		bt_eq : IN STD_LOGIC; 
 		KB_col : OUT STD_LOGIC_VECTOR (4 DOWNTO 1); -- keypad column pins
-	    KB_row : IN STD_LOGIC_VECTOR (4 DOWNTO 1)); -- keypad row pins
+	    KB_row : IN STD_LOGIC_VECTOR (4 DOWNTO 1); -- keypad row pins
 		SW0 : IN STD_LOGIC; -- initializing the first sw
-		SW1: IN STD_LOGIC; -- initializing the second sw
+		SW1 : IN STD_LOGIC); -- initializing the second sw
 	   
 END hexcalc;
 
@@ -138,10 +139,14 @@ BEGIN
 					ELSIF (SW0 = '1' AND SW1 = '0') THEN
 					-- Logic for Multiplication and Division SW1 ON
 						IF (bt_eq = '1' and choice='1') THEN
-							nx_acc <= acc * operand;
+							nx_acc <= (acc) * (operand);
 							nx_state <= SHOW_RESULT;
 						ELSIF (bt_eq = '1'and choice= '0')then
+<<<<<<< Updated upstream
 							nx_acc <= acc / operand;                                        
+=======
+							nx_acc <= (acc) + (operand);                                         
+>>>>>>> Stashed changes
 							nx_state <= SHOW_RESULT;
 						ELSIF kp_hit = '1' THEN
 							nx_operand <= operand(11 DOWNTO 0) & kp_value;
@@ -151,10 +156,10 @@ BEGIN
 					ELSIF (SW0 = '0' AND SW1 = '1') THEN
 					-- Logic for Exponential and Modulo calculation
 						IF (bt_eq = '1' and choice='1') THEN
-							nx_acc <= acc ** operand;                   --Exponentiation, acc^operand
+							nx_acc <= acc + operand;                   --Exponentiation, acc^operand
 							nx_state <= SHOW_RESULT;
 						ELSIF (bt_eq = '1'and choice= '0')then
-							nx_acc <= acc mod operand;                   --Modulo
+							nx_acc <= acc + operand;                   --Modulo
 							nx_state <= SHOW_RESULT;
 						ELSIF kp_hit = '1' THEN
 							nx_operand <= operand(11 DOWNTO 0) & kp_value;
