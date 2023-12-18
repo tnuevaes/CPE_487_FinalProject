@@ -41,3 +41,5 @@ I pledge my honor that I have abided by the Stevens Honor System
 
     - Allow the calculator to perform running operations
     - (Continuous operations based on previous computation results)
+    - Create variable (run_result) to store previous result
+    - Use run_result as first operand of running calculation
