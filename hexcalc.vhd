@@ -31,7 +31,7 @@ ARCHITECTURE Behavioral OF hexcalc IS
 	COMPONENT leddec16 IS
 		PORT (
 			dig : IN unsigned (2 DOWNTO 0);
-			data : IN STD_LOGIC_VECTOR (15 DOWNTO 0);
+			data : IN STD_LOGIC_VECTOR (31 DOWNTO 0);
 			anode : OUT STD_LOGIC_VECTOR (7 DOWNTO 0);
 			seg : OUT STD_LOGIC_VECTOR (6 DOWNTO 0)
 		);
@@ -70,8 +70,8 @@ BEGIN
 		sm_ck_pr : PROCESS (bt_clr, sm_clk) -- state machine clock process
 		BEGIN
 			IF bt_clr = '1' THEN -- reset to known state
-				acc <= X"0000";  
-				operand <= X"0000";
+				acc <= X"00000000";  
+				operand <= X"00000000";
 				pr_state <= ENTER_ACC;
 			ELSIF rising_edge (sm_clk) THEN -- on rising clock edge
 				pr_state <= nx_state; -- update present state
@@ -90,7 +90,7 @@ BEGIN
 				WHEN ENTER_ACC => -- waiting for next digit in 1st operand entry
 					--Keep same logic
 					IF kp_hit = '1' THEN
-						nx_acc <= acc(11 DOWNTO 0) & kp_value; -- Set nx_acc to value of full number operand
+						nx_acc <= acc(27 DOWNTO 0) & kp_value; -- Set nx_acc to value of full number operand
 						nx_state <= ACC_RELEASE;
 					ELSIF bt_plus = '1' THEN  -- Choices
 						nx_state <= START_OP;                                      -- FOR PROJECT: Nested if statements for multiple operations
@@ -108,7 +108,7 @@ BEGIN
 					END IF;
 				WHEN START_OP => -- ready to start entering 2nd operand
 					IF kp_hit = '1' THEN
-						nx_operand <= X"000" & kp_value;
+						nx_operand <= X"0000000" & kp_value;
 						nx_state <= OP_RELEASE;
 						display <= operand;
 					ELSE nx_state <= START_OP;
@@ -131,20 +131,20 @@ BEGIN
 							nx_acc <= std_logic_vector(unsigned(acc) - unsigned(operand));                                        -- FOR PROJECT: Nested if statements for multiple operations
 							nx_state <= SHOW_RESULT;
 						ELSIF kp_hit = '1' THEN
-							nx_operand <= operand(11 DOWNTO 0) & kp_value;
+							nx_operand <= operand(27 DOWNTO 0) & kp_value;
 							nx_state <= OP_RELEASE;
 						ELSE nx_state <= ENTER_OP;
 						END IF;
 					ELSIF (SW0 = '1' AND SW1 = '0') THEN
 					-- Logic for Multiplication and Division SW1 ON
 						IF (bt_eq = '1' and choice='1') THEN
-							nx_acc <= std_logic_vector(resize(unsigned(acc) * unsigned(operand), nx_acc'length));
+							nx_acc <= std_logic_vector(resize(unsigned(acc) * unsigned(operand), 32));
 							nx_state <= SHOW_RESULT;
 						ELSIF (bt_eq = '1'and choice= '0')then
 							nx_acc <= std_logic_vector(unsigned(acc) / unsigned(operand));                                         
 							nx_state <= SHOW_RESULT;
 						ELSIF kp_hit = '1' THEN
-							nx_operand <= operand(11 DOWNTO 0) & kp_value;
+							nx_operand <= operand(27 DOWNTO 0) & kp_value;
 							nx_state <= OP_RELEASE;
 						ELSE nx_state <= ENTER_OP;
 						END IF;
@@ -157,14 +157,14 @@ BEGIN
 							nx_acc <= std_logic_vector(unsigned(acc) mod unsigned(operand));                   --Modulo
 							nx_state <= SHOW_RESULT;
 						ELSIF kp_hit = '1' THEN
-							nx_operand <= operand(11 DOWNTO 0) & kp_value;
+							nx_operand <= operand(27 DOWNTO 0) & kp_value;
 							nx_state <= OP_RELEASE;
 						ELSE nx_state <= ENTER_OP;
 						END IF;
 					END IF;
 				WHEN SHOW_RESULT => -- display result of addition
 					IF kp_hit = '1' THEN
-						nx_acc <= X"000" & kp_value;
+						nx_acc <= X"0000000" & kp_value;
 						nx_state <= ACC_RELEASE;
 						-- Change nx_state to OP_RELEASE which then goes to ENTER_OP to check for kp_hit 1
 					ELSIF bt_plus = '1' THEN
