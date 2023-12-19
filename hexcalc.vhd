@@ -39,9 +39,9 @@ ARCHITECTURE Behavioral OF hexcalc IS
 	SIGNAL cnt : unsigned (20 DOWNTO 0); -- counter to generate timing signals
 	SIGNAL kp_clk, kp_hit, sm_clk : std_logic;
 	SIGNAL kp_value : std_logic_vector (3 DOWNTO 0);
-	SIGNAL nx_acc, acc : std_logic_vector (15 DOWNTO 0); -- accumulated sum
-	SIGNAL nx_operand, operand : std_logic_vector (15 DOWNTO 0); -- operand
-	SIGNAL display : std_logic_vector (15 DOWNTO 0); -- value to be displayed
+	SIGNAL nx_acc, acc : std_logic_vector (31 DOWNTO 0); -- accumulated sum
+	SIGNAL nx_operand, operand : std_logic_vector (31 DOWNTO 0); -- operand
+	SIGNAL display : std_logic_vector (31 DOWNTO 0); -- value to be displayed
 	SIGNAL led_mpx : unsigned (2 DOWNTO 0); -- 7-seg multiplexing clock
 	TYPE state IS (ENTER_ACC, ACC_RELEASE, START_OP, OP_RELEASE, 
 	ENTER_OP, SHOW_RESULT); -- state machine states
