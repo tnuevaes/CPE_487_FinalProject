@@ -128,8 +128,8 @@ BEGIN
 							nx_acc <= std_logic_vector(unsigned(acc) + unsigned(operand));
 							nx_state <= SHOW_RESULT;
 						ELSIF (bt_eq = '1'and choice= '0')then
-						nx_acc <= std_logic_vector(unsigned(acc) - unsigned(operand));                                        -- FOR PROJECT: Nested if statements for multiple operations
-						nx_state <= SHOW_RESULT;
+							nx_acc <= std_logic_vector(unsigned(acc) - unsigned(operand));                                        -- FOR PROJECT: Nested if statements for multiple operations
+							nx_state <= SHOW_RESULT;
 						ELSIF kp_hit = '1' THEN
 							nx_operand <= operand(11 DOWNTO 0) & kp_value;
 							nx_state <= OP_RELEASE;
@@ -138,7 +138,7 @@ BEGIN
 					ELSIF (SW0 = '1' AND SW1 = '0') THEN
 					-- Logic for Multiplication and Division SW1 ON
 						IF (bt_eq = '1' and choice='1') THEN
-							nx_acc <= std_logic_vector(unsigned(acc) * unsigned(operand));
+							nx_acc <= std_logic_vector(resize(unsigned(acc) * unsigned(operand), nx_acc'length));
 							nx_state <= SHOW_RESULT;
 						ELSIF (bt_eq = '1'and choice= '0')then
 							nx_acc <= std_logic_vector(unsigned(acc) / unsigned(operand));                                         
