@@ -166,6 +166,13 @@ BEGIN
 					IF kp_hit = '1' THEN
 						nx_acc <= X"000" & kp_value;
 						nx_state <= ACC_RELEASE;
+						-- Change nx_state to OP_RELEASE which then goes to ENTER_OP to check for kp_hit 1
+					ELSIF bt_plus = '1' THEN
+						choice <= '1';
+						nx_state <= START_OP;
+					ELSIF bt_sub = '1' THEN
+						choice <= '0';
+						nx_state <= START_OP; 
 					ELSE nx_state <= SHOW_RESULT;
 					END IF;
 			END CASE;
