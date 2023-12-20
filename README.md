@@ -11,13 +11,14 @@ I pledge my honor that I have abided by the Stevens Honor System
 
 ## Expected Behavior
 
+
 - Calculator with two operation buttons that change operations depending on the switches that are toggled.
 - Calculator is able to continually do operations using the previous calculation result as the first operand.
 
 ### Base operations
 
-    - Addition
-    - Subtraction
+- Addition
+- Subtraction
 
 - Including two operations required utilizing a signal that determines which button is pressed after the input of the first operand
 - within _ENTER_ACC_, an IF statement exists that checks for whether BTNU or BTND is pressed, with the resulting THEN being to set the signal _choice_ to either 1 or 0, respectively, representing which button is pressed.
@@ -67,3 +68,4 @@ nx_acc <= STD_LOGIC_VECTOR(resize(unsigned(nx_acc)*unsigned(operand), 32));
 - Within each operation if statement, if kp_hit = '1' then nx_state is set to _OP_RELEASE_ which then goes to _ENTER_OP_ to check for kp_hit = '1'
 - Created additional ELSIF statements in SHOW_RESULT case checking for whether BTNU (choice = '1') or BTND (choice = '0') was pressed after result is shown
 - Set final state in _SHOW_RESULT_ case as the _START_OP_ case to begin new operation using the previous result stored in _nx_acc_
+
