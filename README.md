@@ -72,3 +72,7 @@ nx_acc <= STD_LOGIC_VECTOR(resize(unsigned(nx_acc)*unsigned(operand), 32));
 - Within each operation if statement, if kp_hit = '1' then nx_state is set to _OP_RELEASE_ which then goes to _ENTER_OP_ to check for kp_hit = '1'
 - Created additional ELSIF statements in SHOW_RESULT case checking for whether BTNU (choice = '1') or BTND (choice = '0') was pressed after result is shown
 - Set final state in _SHOW_RESULT_ case as the _START_OP_ case to begin new operation using the previous result stored in _nx_acc_
+
+### Project Summary
+
+At first, this project seemed to be a simple set of modifications to the existing lab 4 calculator. After actually trying to implement the functions we wanted, we realized that the process is signifcantly more involved.
