@@ -1,7 +1,7 @@
 LIBRARY IEEE;
 USE IEEE.STD_LOGIC_1164.ALL;
 USE IEEE.NUMERIC_STD.ALL;
-use IEEE.math_real.all;
+--use IEEE.math_real.all;
 
 
 
@@ -14,8 +14,8 @@ ENTITY hexcalc IS
 		bt_plus : IN STD_LOGIC; -- calculator "+" button
 		bt_sub : IN STD_LOGIC; -- calculator "-" button
 		bt_eq : IN STD_LOGIC; 
---		bt_neg : IN STD_LOGIC;  --if we decide to implement negation
-		KB_col : OUT STD_LOGIC_VECTOR (4 DOWNTO 1); -- keypad column pins
+--		bt_neg : IN STD_LOGIC;  --if we decide to implement negation		
+        KB_col : OUT STD_LOGIC_VECTOR (4 DOWNTO 1); -- keypad column pins
 	    KB_row : IN STD_LOGIC_VECTOR (4 DOWNTO 1); -- keypad row pins
 		SW0 : IN STD_LOGIC; -- initializing the first sw
 		SW1 : IN STD_LOGIC; -- initializing the second sw
@@ -54,9 +54,9 @@ ARCHITECTURE Behavioral OF hexcalc IS
 	SIGNAL choice: STD_LOGIC;
 	
 	--square root function based on non restoring square root algorithm
-    FUNCTION sqrt (d : UNSIGNED) return UNSIGNED is
-       variable a : UNSIGNED(31 downto 0):=d;
-       variable q : UNSIGNED(15 downto 0):=(others => '0');
+    FUNCTION sqrt (input : UNSIGNED) return UNSIGNED is
+       variable a : UNSIGNED(31 downto 0):=input;
+       variable q : UNSIGNED(15 downto 0):=(others => '0'); --output
        variable left,right,r : UNSIGNED(17 downto 0):=(others => '0');  --input to adder/sub.r-remainder.
        variable i : INTEGER:=0;
     BEGIN
@@ -78,6 +78,25 @@ ARCHITECTURE Behavioral OF hexcalc IS
         return q;
     END FUNCTION sqrt;
     
+    
+    function multi(input1,input2:std_logic_vector) return unsigned is
+        variable in1:unsigned(input1'length-1 downto 0):=unsigned(input1);
+        variable in2:unsigned(input2'length-1 downto 0):=unsigned(input2);
+        variable result:unsigned(input1'length+input2'length-1 downto 0);
+        variable i:integer:=TO_INTEGER(in1);  --using as constant hopefully
+        variable max_value:integer:=65535;  --max hex value is FFFF
+    BEGIN
+        FOR i in 1 to max_value loop
+            if(TO_INTEGER(in2) > max_value) then
+                exit;
+          else
+                exit when i = TO_INTEGER(in2);
+          end if;
+            result := result + in1;
+        end loop;
+        return result;
+    end function multi;  
+  
 BEGIN
 	ck_proc : PROCESS (clk_50MHz)
 	BEGIN
@@ -175,7 +194,8 @@ BEGIN
 					ELSIF (SW0 = '1' AND SW1 = '0') THEN
 					-- Logic for Multiplication and Division SW0 ON
 						IF (bt_eq = '1' and choice='1') THEN
-							nx_acc <= std_logic_vector(resize(unsigned(acc) * unsigned(operand),nx_acc'length));
+		--					nx_acc <= std_logic_vector(resize(unsigned(acc) * unsigned(operand),nx_acc'length));
+		                    nx_acc <= std_logic_vector(multi(acc,operand));    --custom multiplication function attempt
 							nx_state <= SHOW_RESULT;
 						ELSIF (bt_eq = '1'and choice= '0')then
 							nx_acc <= std_logic_vector(unsigned(acc) / unsigned(operand));                                         
