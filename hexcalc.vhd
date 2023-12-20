@@ -54,9 +54,9 @@ ARCHITECTURE Behavioral OF hexcalc IS
 	SIGNAL choice: STD_LOGIC;
 	
 	--square root function based on non restoring square root algorithm
-    FUNCTION sqrt (d : UNSIGNED) return UNSIGNED is
-       variable a : UNSIGNED(31 downto 0):=d;
-       variable q : UNSIGNED(15 downto 0):=(others => '0');
+    FUNCTION sqrt (input : UNSIGNED) return UNSIGNED is
+       variable a : UNSIGNED(31 downto 0):=input;
+       variable q : UNSIGNED(15 downto 0):=(others => '0'); --output
        variable left,right,r : UNSIGNED(17 downto 0):=(others => '0');  --input to adder/sub.r-remainder.
        variable i : INTEGER:=0;
     BEGIN
@@ -78,6 +78,19 @@ ARCHITECTURE Behavioral OF hexcalc IS
         return q;
     END FUNCTION sqrt;
     
+    
+    function mult(input1,input2:std_logic_vector) return unsigned is
+        variable in1:unsigned(input1'length-1 downto 0):=unsigned(input1);
+        variable in2:unsigned(input2'length-1 downto 0):=unsigned(input2);
+        variable result:unsigned(input1'length+input2'length-1 downto 0);
+        variable i:integer:=0;
+    BEGIN
+        FOR i in 0 to to_integer(in1)-1 loop
+            result := result + in1;
+        end loop;
+        return result;
+    end function mult;  
+  
 BEGIN
 	ck_proc : PROCESS (clk_50MHz)
 	BEGIN
@@ -175,7 +188,8 @@ BEGIN
 					ELSIF (SW0 = '1' AND SW1 = '0') THEN
 					-- Logic for Multiplication and Division SW0 ON
 						IF (bt_eq = '1' and choice='1') THEN
-							nx_acc <= std_logic_vector(resize(unsigned(acc) * unsigned(operand),nx_acc'length));
+		--					nx_acc <= std_logic_vector(resize(unsigned(acc) * unsigned(operand),nx_acc'length));
+		                    nx_acc <= std_logic_vector(mult(acc,operand));    --custom multiplication function attempt
 							nx_state <= SHOW_RESULT;
 						ELSIF (bt_eq = '1'and choice= '0')then
 							nx_acc <= std_logic_vector(unsigned(acc) / unsigned(operand));                                         
