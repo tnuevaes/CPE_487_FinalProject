@@ -4,7 +4,7 @@ USE IEEE.STD_LOGIC_1164.ALL;
 ENTITY leddec16 IS
 	PORT (
 		dig : IN STD_LOGIC_VECTOR (2 DOWNTO 0); -- which digit to currently display
-		data : IN STD_LOGIC_VECTOR (15 DOWNTO 0); -- 16-bit (4-digit) data
+		data : IN STD_LOGIC_VECTOR (31 DOWNTO 0); -- 16-bit (4-digit) data
 		anode : OUT STD_LOGIC_VECTOR (7 DOWNTO 0); -- which anode to turn on
 		seg : OUT STD_LOGIC_VECTOR (6 DOWNTO 0)); -- segment code for current digit
 END leddec16;
