@@ -4,6 +4,7 @@ USE IEEE.NUMERIC_STD.ALL;
 use IEEE.math_real.all;
 
 
+
 ENTITY hexcalc IS
 	PORT (
 		clk_50MHz : IN STD_LOGIC; -- system clock (50 MHz)
@@ -13,10 +14,12 @@ ENTITY hexcalc IS
 		bt_plus : IN STD_LOGIC; -- calculator "+" button
 		bt_sub : IN STD_LOGIC; -- calculator "-" button
 		bt_eq : IN STD_LOGIC; 
+--		bt_neg : IN STD_LOGIC;  --if we decide to implement negation
 		KB_col : OUT STD_LOGIC_VECTOR (4 DOWNTO 1); -- keypad column pins
 	    KB_row : IN STD_LOGIC_VECTOR (4 DOWNTO 1); -- keypad row pins
 		SW0 : IN STD_LOGIC; -- initializing the first sw
-		SW1 : IN STD_LOGIC); -- initializing the second sw
+		SW1 : IN STD_LOGIC; -- initializing the second sw
+		SW2 : IN STD_LOGIC); -- initializing the third sw
 	   
 END hexcalc;
 
@@ -49,6 +52,31 @@ ARCHITECTURE Behavioral OF hexcalc IS
 	ENTER_OP, SHOW_RESULT); -- state machine states
 	SIGNAL pr_state, nx_state : state; -- present and next states
 	SIGNAL choice: STD_LOGIC;
+	
+	--square root function based on non restoring square root algorithm
+    FUNCTION sqrt (d : UNSIGNED) return UNSIGNED is
+       variable a : UNSIGNED(31 downto 0):=d;
+       variable q : UNSIGNED(15 downto 0):=(others => '0');
+       variable left,right,r : UNSIGNED(17 downto 0):=(others => '0');  --input to adder/sub.r-remainder.
+       variable i : INTEGER:=0;
+    BEGIN
+        FOR i in 0 to 15 LOOP
+            right(0):='1';
+            right(1):=r(17);
+            right(17 downto 2):=q;
+            left(1 downto 0):=a(31 downto 30);
+            left(17 downto 2):=r(15 downto 0);
+            a(31 downto 2):=a(29 downto 0);  --shifting by 2 bit.
+            if ( r(17) = '1') then
+                r := left + right;
+            else
+                r := left - right;
+            end if;
+            q(15 downto 1) := q(14 downto 0);
+            q(0) := not r(17);
+        END LOOP;
+    END FUNCTION sqrt;
+    
 BEGIN
 	ck_proc : PROCESS (clk_50MHz)
 	BEGIN
@@ -94,15 +122,18 @@ BEGIN
 					IF kp_hit = '1' THEN
 						nx_acc <= acc(27 DOWNTO 0) & kp_value; -- Set nx_acc to value of full number operand
 						nx_state <= ACC_RELEASE;
-					ELSIF bt_plus = '1' THEN  -- Choices
+					ELSIF (bt_plus = '1' AND SW2 = '1') THEN                       --check SW2 for sq/sqrt btn functionality
+					   nx_acc <= STD_LOGIC_VECTOR(unsigned(nx_acc)**2);            --squared nx_acc
+					   nx_state <= ENTER_ACC;
+					ELSIF (bt_sub = '1' AND SW2 = '1') THEN                        --check sw2 for sq/sqrt btn functionality
+					   nx_acc <= STD_LOGIC_VECTOR(sqrt(unsigned(nx_acc)));         -- square root of nx_acc
+					   nx_state <= ENTER_ACC;
+					ELSIF (bt_plus = '1' AND SW2 = '0') THEN                       -- Choices --check sw2 off to not apply sq/sqrt
 						nx_state <= START_OP;                                      -- FOR PROJECT: Nested if statements for multiple operations
 						choice <= '1';
-					ELSIF bt_sub ='1'then   -- Choices
+					ELSIF (bt_sub ='1' AND SW2 = '0') THEN                         -- Choices  --check sw2 off to not apply sq/sqrt
 					   nx_state <= START_OP;
 					   choice <='0';
-                    ELSIF (SW0 = '1' AND SW1 = '1' AND bt_plus = '1') THEN
-                       nx_state <= START_OP;         
-                       choice <= '1';
 					ELSE
 						nx_state <= ENTER_ACC;
 					END IF;
@@ -141,7 +172,7 @@ BEGIN
 						ELSE nx_state <= ENTER_OP;
 						END IF;
 					ELSIF (SW0 = '1' AND SW1 = '0') THEN
-					-- Logic for Multiplication and Division SW1 ON
+					-- Logic for Multiplication and Division SW0 ON
 						IF (bt_eq = '1' and choice='1') THEN
 							nx_acc <= std_logic_vector(resize(unsigned(acc) * unsigned(operand), 32));
 							nx_state <= SHOW_RESULT;
@@ -154,7 +185,7 @@ BEGIN
 						ELSE nx_state <= ENTER_OP;
 						END IF;
 					ELSIF (SW0 = '0' AND SW1 = '1') THEN
-					-- Logic for Exponential and Modulo calculation
+					-- Logic for Remainder and Modulo calculation SW1 ON
 						IF (bt_eq = '1' and choice='1') THEN
 							nx_acc <= std_logic_vector(unsigned(acc) rem unsigned(operand));                   --remainder
 							nx_state <= SHOW_RESULT;                                              -- Additional Note: Create new final solved signal, not nx_acc to store larger product of operation
@@ -165,17 +196,21 @@ BEGIN
 							nx_operand <= operand(27 DOWNTO 0) & kp_value;
 							nx_state <= OP_RELEASE;
 						ELSE nx_state <= ENTER_OP;
-						END IF;      
-                    ELSIF (SW0 = '1' AND SW1 = '1') THEN
-                        IF (bt_eq = '1' and choice='1') THEN
-                            nx_acc <= STD_LOGIC_VECTOR(resize(unsigned(nx_acc)*unsigned(nx_acc), 32));   -- SQUARED  
-                            nx_state <= SHOW_RESULT;
-                        ELSIF kp_hit = '1' THEN
-							nx_operand <= operand(27 DOWNTO 0) & kp_value;
+						END IF;
+					ELSIF (SW2 = '1') THEN
+					-- logic for squares and square root functions when SW2 ON
+					   IF (bt_plus = '1') THEN
+							nx_operand <= STD_LOGIC_VECTOR(unsigned(nx_operand)**2);             --squares the operand
+							nx_state <= ENTER_OP;
+					   ELSIF (bt_sub = '1')then
+							nx_operand <= STD_LOGIC_VECTOR(sqrt(unsigned(nx_operand)));                --square root of the operand                                         
+							nx_state <= ENTER_OP;
+					   ELSIF kp_hit = '1' THEN
+							nx_operand <= operand(11 DOWNTO 0) & kp_value;
 							nx_state <= OP_RELEASE;
-					    ELSE nx_state <= ENTER_OP;
-					    END IF;
-                    END IF;          
+						ELSE nx_state <= ENTER_OP;
+						END IF;
+					END IF;
 				WHEN SHOW_RESULT => -- display result of addition
 					IF kp_hit = '1' THEN
 						nx_acc <= X"0000000" & kp_value;

@@ -9,7 +9,9 @@ I pledge my honor that I have abided by the Stevens Honor System
 - Study Lab 4 base code for calculator
 - Implement additional features to calculator
 
-## Expected Behavior
+### Expected Behavior
+
+    - TBD
 
 
 - Calculator with two operation buttons that change operations depending on the switches that are toggled.
@@ -47,6 +49,8 @@ This is utilized in the ENTER_OP case where an IF statement was included to test
     - Division
     - Modulo
     - Remainder
+    - Squaring
+    - Square Root (Non Restoring)
 
 - Using library _IEEE.NUMERIC_STD.ALL_, the program is able to utilize additional arithmetic operators.
 - The additional operators are used in the ENTER_OP case
@@ -68,4 +72,3 @@ nx_acc <= STD_LOGIC_VECTOR(resize(unsigned(nx_acc)*unsigned(operand), 32));
 - Within each operation if statement, if kp_hit = '1' then nx_state is set to _OP_RELEASE_ which then goes to _ENTER_OP_ to check for kp_hit = '1'
 - Created additional ELSIF statements in SHOW_RESULT case checking for whether BTNU (choice = '1') or BTND (choice = '0') was pressed after result is shown
 - Set final state in _SHOW_RESULT_ case as the _START_OP_ case to begin new operation using the previous result stored in _nx_acc_
-
