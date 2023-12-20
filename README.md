@@ -36,7 +36,7 @@ I pledge my honor that I have abided by the Stevens Honor System
       - BTNU = Multiplication Operation
       - BTND = Division Operation
     - Switch 2
-      - BTNU = Exponentiation Operation
+      - BTNU = Remainder Operation
       - BTND = Modulo Operation 
 
 This is utilized in the ENTER_OP case where an IF statement was included to test which switches were toggled.
@@ -47,8 +47,8 @@ This is utilized in the ENTER_OP case where an IF statement was included to test
 
     - Multiplication
     - Division
-    - Modulo
     - Remainder
+    - Modulo
     - Squaring
     - Square Root (Non Restoring)
 
