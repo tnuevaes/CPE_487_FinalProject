@@ -194,7 +194,7 @@ BEGIN
 					ELSIF (SW0 = '1' AND SW1 = '0') THEN
 					-- Logic for Multiplication and Division SW0 ON
 						IF (bt_eq = '1' and choice='1') THEN
-		--					nx_acc <= std_logic_vector(resize(unsigned(acc) * unsigned(operand),nx_acc'length));
+							nx_acc <= std_logic_vector(resize(unsigned(acc) * unsigned(operand),nx_acc'length));
 		--                  nx_acc <= std_logic_vector(mult(acc,operand));    --custom multiplication function attempt
 							nx_state <= SHOW_RESULT;
 						ELSIF (bt_eq = '1'and choice= '0')then
