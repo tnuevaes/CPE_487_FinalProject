@@ -81,7 +81,7 @@ BEGIN
 		END PROCESS;
 		-- state maching combinatorial process
 		-- determines output of state machine and next state
-		sm_comb_pr : PROCESS (kp_hit, kp_value, bt_plus, bt_eq, acc, operand, pr_state)
+		sm_comb_pr : PROCESS (kp_hit, kp_value, bt_plus, bt_sub, bt_eq, acc, operand, pr_state)
 		BEGIN
 			nx_acc <= acc; -- Set value of nx_acc to initial keypress
 			nx_operand <= operand; --Set value of nx_operant to value of second operand keypress
