@@ -101,8 +101,8 @@ BEGIN
 					   nx_state <= START_OP;
 					   choice <='0';
                     ELSIF (SW0 = '1' AND SW1 = '1' AND bt_plus = '1') THEN
-                       nx_acc <= STD_LOGIC_VECTOR(unsigned(nx_acc)*unsigned(nx_acc));   -- SQUARED
-                       nx_state <= ENTER_OP;         
+                       nx_state <= START_OP;         
+                       choice <= '1';
 					ELSE
 						nx_state <= ENTER_ACC;
 					END IF;
@@ -166,9 +166,16 @@ BEGIN
 							nx_state <= OP_RELEASE;
 						ELSE nx_state <= ENTER_OP;
 						END IF;      
-                    ELSIF (SW0 = '1' AND SW1 = '1') THEN  
+                    ELSIF (SW0 = '1' AND SW1 = '1') THEN
+                        IF (bt_eq = '1' and choice='1') THEN
+                            nx_acc <= STD_LOGIC_VECTOR(resize(unsigned(nx_acc)*unsigned(nx_acc), 32));   -- SQUARED  
                             nx_state <= SHOW_RESULT;
-                        END IF;          
+                        ELSIF kp_hit = '1' THEN
+							nx_operand <= operand(27 DOWNTO 0) & kp_value;
+							nx_state <= OP_RELEASE;
+					    ELSE nx_state <= ENTER_OP;
+					    END IF;
+                    END IF;          
 				WHEN SHOW_RESULT => -- display result of addition
 					IF kp_hit = '1' THEN
 						nx_acc <= X"0000000" & kp_value;
