@@ -44,18 +44,17 @@ ARCHITECTURE Behavioral OF hexcalc IS
 	SIGNAL cnt : unsigned (20 DOWNTO 0); -- counter to generate timing signals
 	SIGNAL kp_clk, kp_hit, sm_clk : std_logic;
 	SIGNAL kp_value : std_logic_vector (3 DOWNTO 0);
-	SIGNAL nx_acc : std_logic_vector (31 DOWNTO 0); -- accumulated sum
-	
-	signal acc : std_logic_vector (15 DOWNTO 0);
-	signal operand : std_logic_vector (15 DOWNTO 0);
-	
-	SIGNAL nx_operand : std_logic_vector (31 DOWNTO 0); -- operand
+	SIGNAL nx_acc, acc : std_logic_vector (31 DOWNTO 0); -- accumulated sum
+	SIGNAL nx_operand, operand : std_logic_vector (31 DOWNTO 0); -- operand
 	SIGNAL display : std_logic_vector (31 DOWNTO 0); -- value to be displayed
 	SIGNAL led_mpx : unsigned (2 DOWNTO 0); -- 7-seg multiplexing clock
 	TYPE state IS (ENTER_ACC, ACC_RELEASE, START_OP, OP_RELEASE, 
-	ENTER_OP, SHOW_RESULT); -- state machine states
+	ENTER_OP,FIX_SUM, SHOW_RESULT); -- state machine states
 	SIGNAL pr_state, nx_state : state; -- present and next states
 	SIGNAL choice: STD_LOGIC;
+	SIGNAL temp_sum1:std_logic_vector(31 downto 0);
+	SIGNAL temp_sum2:std_logic_vector(31 downto 0);
+	SIGNAL temp_sum3:std_logic_vector(31 downto 0);
 	
 	--square root function based on non restoring square root algorithm
     FUNCTION sqrt (input : UNSIGNED) return UNSIGNED is
@@ -198,8 +197,8 @@ BEGIN
 					ELSIF (SW0 = '1' AND SW1 = '0') THEN
 					-- Logic for Multiplication and Division SW0 ON
 						IF (bt_eq = '1' and choice='1') THEN
-							nx_acc <= std_logic_vector(unsigned(acc) * unsigned(operand));
-		  --                nx_acc <= std_logic_vector(mult(acc,operand));    --custom multiplication function attempt
+							nx_acc <= std_logic_vector(resize(unsigned(acc) * unsigned(operand),nx_acc'length));
+		--                  nx_acc <= std_logic_vector(mult(acc,operand));    --custom multiplication function attempt
 							nx_state <= SHOW_RESULT;
 						ELSIF (bt_eq = '1'and choice= '0')then
 							nx_acc <= std_logic_vector(unsigned(acc) / unsigned(operand));                                         
@@ -236,9 +235,15 @@ BEGIN
 						ELSE nx_state <= ENTER_OP;
 						END IF;
 					END IF;
+			    WHEN FIX_SUM =>
+                    temp_sum1 <= nx_acc(3 downto 0);
+                    temp_sum2 <= nx_acc(7 downto 4);
+                    temp_sum3 <= nx_acc(11 downto 8);
+                    
 				WHEN SHOW_RESULT => -- display result of addition
 					IF kp_hit = '1' THEN
 						nx_acc <= X"0000000" & kp_value;
+						operand <=X"00000000";
 						nx_state <= ACC_RELEASE;
 						-- Change nx_state to OP_RELEASE which then goes to ENTER_OP to check for kp_hit 1
 					ELSIF bt_plus = '1' THEN
