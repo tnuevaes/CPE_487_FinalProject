@@ -44,8 +44,12 @@ ARCHITECTURE Behavioral OF hexcalc IS
 	SIGNAL cnt : unsigned (20 DOWNTO 0); -- counter to generate timing signals
 	SIGNAL kp_clk, kp_hit, sm_clk : std_logic;
 	SIGNAL kp_value : std_logic_vector (3 DOWNTO 0);
-	SIGNAL nx_acc, acc : std_logic_vector (31 DOWNTO 0); -- accumulated sum
-	SIGNAL nx_operand, operand : std_logic_vector (31 DOWNTO 0); -- operand
+	SIGNAL nx_acc : std_logic_vector (31 DOWNTO 0); -- accumulated sum
+	
+	signal acc : std_logic_vector (15 DOWNTO 0);
+	signal operand : std_logic_vector (15 DOWNTO 0);
+	
+	SIGNAL nx_operand : std_logic_vector (31 DOWNTO 0); -- operand
 	SIGNAL display : std_logic_vector (31 DOWNTO 0); -- value to be displayed
 	SIGNAL led_mpx : unsigned (2 DOWNTO 0); -- 7-seg multiplexing clock
 	TYPE state IS (ENTER_ACC, ACC_RELEASE, START_OP, OP_RELEASE, 
@@ -143,7 +147,7 @@ BEGIN
 						nx_acc <= acc(27 DOWNTO 0) & kp_value; -- Set nx_acc to value of full number operand
 						nx_state <= ACC_RELEASE;
 					ELSIF (bt_plus = '1' AND SW2 = '1') THEN                       --check SW2 for sq/sqrt btn functionality
-		--			   nx_acc <= STD_LOGIC_VECTOR(unsigned(nx_acc)**2);            --squared nx_acc
+					   nx_acc <= STD_LOGIC_VECTOR(resize(unsigned(nx_acc)*unsigned(nx_acc),nx_acc'length));            --squared nx_acc
 					   nx_state <= ENTER_ACC;
 					ELSIF (bt_sub = '1' AND SW2 = '1') THEN                        --check sw2 for sq/sqrt btn functionality
 					   nx_acc <= STD_LOGIC_VECTOR(RESIZE(sqrt(unsigned(nx_acc)),nx_acc'length));         -- square root of nx_acc
@@ -194,8 +198,8 @@ BEGIN
 					ELSIF (SW0 = '1' AND SW1 = '0') THEN
 					-- Logic for Multiplication and Division SW0 ON
 						IF (bt_eq = '1' and choice='1') THEN
-							nx_acc <= std_logic_vector(resize(unsigned(acc) * unsigned(operand),nx_acc'length));
-		--                  nx_acc <= std_logic_vector(mult(acc,operand));    --custom multiplication function attempt
+							nx_acc <= std_logic_vector(unsigned(acc) * unsigned(operand));
+		  --                nx_acc <= std_logic_vector(mult(acc,operand));    --custom multiplication function attempt
 							nx_state <= SHOW_RESULT;
 						ELSIF (bt_eq = '1'and choice= '0')then
 							nx_acc <= std_logic_vector(unsigned(acc) / unsigned(operand));                                         
@@ -221,7 +225,7 @@ BEGIN
 					ELSIF (SW2 = '1') THEN
 					-- logic for squares and square root functions when SW2 ON
 					   IF (bt_plus = '1') THEN
-			--				nx_operand <= STD_LOGIC_VECTOR(unsigned(nx_operand)**2);             --squares the operand
+							nx_operand <= STD_LOGIC_VECTOR(resize(unsigned(nx_operand)*unsigned(nx_operand),nx_operand'length));             --squares the operand
 							nx_state <= ENTER_OP;
 					   ELSIF (bt_sub = '1')then
 							nx_operand <= STD_LOGIC_VECTOR(RESIZE(sqrt(unsigned(nx_operand)),nx_acc'length));                --square root of the operand                                         
