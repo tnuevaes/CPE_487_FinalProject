@@ -1,6 +1,8 @@
 LIBRARY IEEE;
 USE IEEE.STD_LOGIC_1164.ALL;
 USE IEEE.NUMERIC_STD.ALL;
+use IEEE.math_real.all;
+
 
 ENTITY hexcalc IS
 	PORT (
@@ -98,6 +100,9 @@ BEGIN
 					ELSIF bt_sub ='1'then   -- Choices
 					   nx_state <= START_OP;
 					   choice <='0';
+                    ELSIF (SW0 = '1' AND SW1 = '1' AND bt_plus = '1') THEN
+                       nx_acc <= STD_LOGIC_VECTOR(unsigned(nx_acc)*unsigned(nx_acc));   -- SQUARED
+                       nx_state <= ENTER_OP;         
 					ELSE
 						nx_state <= ENTER_ACC;
 					END IF;
@@ -155,13 +160,15 @@ BEGIN
 							nx_state <= SHOW_RESULT;                                              -- Additional Note: Create new final solved signal, not nx_acc to store larger product of operation
 						ELSIF (bt_eq = '1'and choice= '0')then
 							nx_acc <= std_logic_vector(unsigned(acc) mod unsigned(operand));                   --Modulo
-							nx_state <= SHOW_RESULT;
+							nx_state <= SHOW_RESULT;             
 						ELSIF kp_hit = '1' THEN
 							nx_operand <= operand(27 DOWNTO 0) & kp_value;
 							nx_state <= OP_RELEASE;
 						ELSE nx_state <= ENTER_OP;
-						END IF;
-					END IF;
+						END IF;      
+                    ELSIF (SW0 = '1' AND SW1 = '1') THEN  
+                            nx_state <= SHOW_RESULT;
+                        END IF;          
 				WHEN SHOW_RESULT => -- display result of addition
 					IF kp_hit = '1' THEN
 						nx_acc <= X"0000000" & kp_value;
