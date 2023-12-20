@@ -85,7 +85,7 @@ ARCHITECTURE Behavioral OF hexcalc IS
         variable result:unsigned(input1'length+input2'length-1 downto 0);
         variable i:integer:=0;
     BEGIN
-        FOR i in 0 to to_integer(in1)-1 loop
+        FOR i in 1 to to_integer(in1) loop
             result := result + in1;
         end loop;
         return result;
