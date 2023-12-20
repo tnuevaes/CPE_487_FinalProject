@@ -11,9 +11,6 @@ I pledge my honor that I have abided by the Stevens Honor System
 
 ### Expected Behavior
 
-    - TBD
-
-
 - Calculator with two operation buttons that change operations depending on the switches that are toggled.
 - Calculator is able to continually do operations using the previous calculation result as the first operand.
 
@@ -64,6 +61,8 @@ This is utilized in the ENTER_OP case where an IF statement was included to test
 ```vhdl
 nx_acc <= STD_LOGIC_VECTOR(resize(unsigned(nx_acc)*unsigned(operand), 32));
 ```
+
+- Doing this creates an issue with how the calculator deals with overflow, leading to certain multiplication cases being incorrect.
 
 ### Running Operations
 
