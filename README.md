@@ -11,10 +11,8 @@ I pledge my honor that I have abided by the Stevens Honor System
 
 ### Expected Behavior
 
-    - TBD
-
-
 - Calculator with two operation buttons that change operations depending on the switches that are toggled.
+- Being able to toggle between a number of various operations
 - Calculator is able to continually do operations using the previous calculation result as the first operand.
 
 ### Base operations
