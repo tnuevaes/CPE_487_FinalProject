@@ -65,6 +65,8 @@ This is utilized in the ENTER_OP case where an IF statement was included to test
 nx_acc <= STD_LOGIC_VECTOR(resize(unsigned(nx_acc)*unsigned(operand), 32));
 ```
 
+- Doing this creates an issue with how the calculator deals with overflow, leading to certain multiplication cases being incorrect.
+
 ### Running Operations
 
 #### Allow the calculator to perform running operations (Continuous operations based on previous computation results)
