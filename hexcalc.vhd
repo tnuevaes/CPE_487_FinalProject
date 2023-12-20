@@ -13,8 +13,12 @@ ENTITY hexcalc IS
 		bt_eq : IN STD_LOGIC; 
 		KB_col : OUT STD_LOGIC_VECTOR (4 DOWNTO 1); -- keypad column pins
 	    KB_row : IN STD_LOGIC_VECTOR (4 DOWNTO 1); -- keypad row pins
-		SW0 : IN STD_LOGIC; -- initializing the first sw
-		SW1 : IN STD_LOGIC); -- initializing the second sw
+		SW0 : IN STD_LOGIC; -- initializing the first sw for Mult and Division
+		SW1 : IN STD_LOGIC; -- initializing the second sw for Expo and Modulation
+		SW2 : IN STD_LOGIC -- SW2 for Square and Square Root
+		
+	); 
+
 	   
 END hexcalc;
 
