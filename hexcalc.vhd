@@ -79,23 +79,23 @@ ARCHITECTURE Behavioral OF hexcalc IS
     END FUNCTION sqrt;
     
     
-    function multi(input1,input2:std_logic_vector) return unsigned is
-        variable in1:unsigned(input1'length-1 downto 0):=unsigned(input1);
-        variable in2:unsigned(input2'length-1 downto 0):=unsigned(input2);
-        variable result:unsigned(input1'length+input2'length-1 downto 0);
-        variable i:integer:=TO_INTEGER(in1);  --using as constant hopefully
-        variable max_value:integer:=65535;  --max hex value is FFFF
-    BEGIN
-        FOR i in 1 to max_value loop
-            if(TO_INTEGER(in2) > max_value) then
-                exit;
-          else
-                exit when i = TO_INTEGER(in2);
-          end if;
-            result := result + in1;
-        end loop;
-        return result;
-    end function multi;  
+--    function mult(input1,input2:std_logic_vector) return unsigned is
+--        variable in1:unsigned(input1'length-1 downto 0):=unsigned(input1);
+--        variable in2:unsigned(input2'length-1 downto 0):=unsigned(input2);
+--        variable result:unsigned(input1'length+input2'length-1 downto 0);
+--        variable i:integer:=TO_INTEGER(in1);  --using as constant hopefully
+--        variable max_value:integer:=65500;  --max hex value is FFFF
+--    BEGIN
+--        FOR i in 0 to max_value loop
+--            if(TO_INTEGER(in2) > max_value) then
+--                exit;
+--          else
+--                exit when i = TO_INTEGER(in2);
+--          end if;
+--            result := result + in1;
+--        end loop;
+--        return result;
+--    end function mult;  
   
 BEGIN
 	ck_proc : PROCESS (clk_50MHz)
@@ -195,7 +195,7 @@ BEGIN
 					-- Logic for Multiplication and Division SW0 ON
 						IF (bt_eq = '1' and choice='1') THEN
 		--					nx_acc <= std_logic_vector(resize(unsigned(acc) * unsigned(operand),nx_acc'length));
-		                    nx_acc <= std_logic_vector(multi(acc,operand));    --custom multiplication function attempt
+		--                  nx_acc <= std_logic_vector(mult(acc,operand));    --custom multiplication function attempt
 							nx_state <= SHOW_RESULT;
 						ELSIF (bt_eq = '1'and choice= '0')then
 							nx_acc <= std_logic_vector(unsigned(acc) / unsigned(operand));                                         
