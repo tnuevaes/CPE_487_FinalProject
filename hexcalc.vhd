@@ -2,6 +2,7 @@ LIBRARY IEEE;
 USE IEEE.STD_LOGIC_1164.ALL;
 USE IEEE.NUMERIC_STD.ALL;
 
+
 ENTITY hexcalc IS
 	PORT (
 		clk_50MHz : IN STD_LOGIC; -- system clock (50 MHz)
@@ -49,6 +50,31 @@ ARCHITECTURE Behavioral OF hexcalc IS
 	ENTER_OP, SHOW_RESULT); -- state machine states
 	SIGNAL pr_state, nx_state : state; -- present and next states
 	SIGNAL choice: STD_LOGIC;
+	
+	--square root function based on non restoring square root algorithm
+    FUNCTION sqrt (d : UNSIGNED) return UNSIGNED is
+       variable a : UNSIGNED(31 downto 0):=d;
+       variable q : UNSIGNED(15 downto 0):=(others => '0');
+       variable left,right,r : UNSIGNED(17 downto 0):=(others => '0');  --input to adder/sub.r-remainder.
+       variable i : INTEGER:=0;
+    BEGIN
+        FOR i in 0 to 15 LOOP
+            right(0):='1';
+            right(1):=r(17);
+            right(17 downto 2):=q;
+            left(1 downto 0):=a(31 downto 30);
+            left(17 downto 2):=r(15 downto 0);
+            a(31 downto 2):=a(29 downto 0);  --shifting by 2 bit.
+            if ( r(17) = '1') then
+                r := left + right;
+            else
+                r := left - right;
+            end if;
+            q(15 downto 1) := q(14 downto 0);
+            q(0) := not r(17);
+        END LOOP;
+    END FUNCTION sqrt;
+    
 BEGIN
 	ck_proc : PROCESS (clk_50MHz)
 	BEGIN
@@ -83,7 +109,7 @@ BEGIN
 		END PROCESS;
 		-- state maching combinatorial process
 		-- determines output of state machine and next state
-		sm_comb_pr : PROCESS (kp_hit, kp_value, bt_plus, bt_eq, acc, operand, pr_state)
+		sm_comb_pr : PROCESS (kp_hit, kp_value, bt_plus, bt_sub, bt_eq, acc, operand, pr_state)
 		BEGIN
 			nx_acc <= acc; -- Set value of nx_acc to initial keypress
 			nx_operand <= operand; --Set value of nx_operant to value of second operand keypress
@@ -98,7 +124,7 @@ BEGIN
 		--			   nx_acc <= sq(nx_acc);                   --squared nx_acc
 					   nx_state <= ENTER_ACC;
 					ELSIF (bt_sub = '1' AND SW2 = '1') THEN                        --check sw2 for sq/sqrt btn functionality
-		--			   nx_acc <= sqrt(nx_acc);                 -- square root of nx_acc
+					   nx_acc <= STD_LOGIC_VECTOR(sqrt(unsigned(nx_acc)));                 -- square root of nx_acc
 					   nx_state <= ENTER_ACC;
 					ELSIF (bt_plus = '1' AND SW2 = '0') THEN                       -- Choices --check sw2 off to not apply sq/sqrt
 						nx_state <= START_OP;                                      -- FOR PROJECT: Nested if statements for multiple operations
@@ -175,7 +201,7 @@ BEGIN
 		--					nx_operand <= sq(nx_operand);                  --squares the operand
 							nx_state <= ENTER_OP;
 					   ELSIF (bt_sub = '1')then
-		--					nx_operand <= sqrt(nx_operand);                --square root of the operand                                         
+							nx_operand <= STD_LOGIC_VECTOR(sqrt(unsigned(nx_operand)));                --square root of the operand                                         
 							nx_state <= ENTER_OP;
 					   ELSIF kp_hit = '1' THEN
 							nx_operand <= operand(11 DOWNTO 0) & kp_value;
