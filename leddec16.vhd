@@ -4,7 +4,7 @@ USE IEEE.STD_LOGIC_1164.ALL;
 ENTITY leddec16 IS
 	PORT (
 		dig : IN STD_LOGIC_VECTOR (2 DOWNTO 0); -- which digit to currently display
-		data : IN STD_LOGIC_VECTOR (31 DOWNTO 0); -- 16-bit (4-digit) data
+		data : IN STD_LOGIC_VECTOR (32 DOWNTO 0); -- 16-bit (4-digit) data
 		anode : OUT STD_LOGIC_VECTOR (7 DOWNTO 0); -- which anode to turn on
 		seg : OUT STD_LOGIC_VECTOR (6 DOWNTO 0)); -- segment code for current digit
 END leddec16;
@@ -16,7 +16,8 @@ BEGIN
 	data4 <= data(3 DOWNTO 0) WHEN dig = "000" ELSE -- digit 0
 	         data(7 DOWNTO 4) WHEN dig = "001" ELSE -- digit 1
 	         data(11 DOWNTO 8) WHEN dig = "010" ELSE -- digit 2
-	         data(15 DOWNTO 12); -- digit 3
+	         data(15 DOWNTO 12) WHEN dig = "011" ELSE -- digit 3
+	         data(32 downto 29);
 	-- Turn on segments corresponding to 4-bit data word
 	seg <= "0000001" WHEN data4 = "0000" ELSE -- 0
 	       "1001111" WHEN data4 = "0001" ELSE -- 1
@@ -34,6 +35,7 @@ BEGIN
 	       "1000010" WHEN data4 = "1101" ELSE -- D
 	       "0110000" WHEN data4 = "1110" ELSE -- E
 	       "0111000" WHEN data4 = "1111" ELSE -- F
+	       "0000100" WHEN data4(32 downto 29) = "1000" ELSE -- negative?
 	       "1111111";
 	-- Turn on anode of 7-segment display addressed by 3-bit digit selector dig
 	anode <= 
@@ -41,7 +43,7 @@ BEGIN
 	         "11111101" WHEN dig = "001" AND data(15 downto 4) /= X"000" ELSE -- 1
 	         "11111011" WHEN dig = "010" AND data(15 downto 8) /= X"00" ELSE -- 2
 	         "11110111" WHEN dig = "011" AND data(15 downto 12)/= X"0" ELSE -- 3
---	         "11101111" WHEN dig = "100" ELSE -- 4
+	         "11101111" WHEN dig = "100" ELSE -- 4
 --	         "11011111" WHEN dig = "101" ELSE -- 5 
 --	         "10111111" WHEN dig = "110" ELSE -- 6
 --	         "01111111" WHEN dig = "111" ELSE -- 7
