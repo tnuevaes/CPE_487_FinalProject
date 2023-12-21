@@ -48,7 +48,7 @@ ARCHITECTURE Behavioral OF hexcalc IS
 	SIGNAL display : std_logic_vector (31 DOWNTO 0); -- value to be displayed
 	SIGNAL led_mpx : unsigned (2 DOWNTO 0); -- 7-seg multiplexing clock
 	TYPE state IS (ENTER_ACC, ACC_RELEASE, START_OP, OP_RELEASE, 
-	ENTER_OP,FIX_SUM, SHOW_RESULT); -- state machine states
+	ENTER_OP, SHOW_RESULT); -- state machine states
 	SIGNAL pr_state, nx_state : state; -- present and next states
 	SIGNAL choice: STD_LOGIC;
 	SIGNAL temp_sum1:std_logic_vector(31 downto 0);
@@ -212,10 +212,6 @@ BEGIN
 						ELSE nx_state <= ENTER_OP;
 						END IF;
 					END IF;
-			    WHEN FIX_SUM =>
-                    temp_sum1 <= nx_acc(3 downto 0);
-                    temp_sum2 <= nx_acc(7 downto 4);
-                    temp_sum3 <= nx_acc(11 downto 8);
                     
 				WHEN SHOW_RESULT => -- display result of addition
 					IF kp_hit = '1' THEN
