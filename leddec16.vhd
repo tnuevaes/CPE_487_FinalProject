@@ -35,7 +35,7 @@ BEGIN
 	       "1000010" WHEN data4 = "1101" ELSE -- D
 	       "0110000" WHEN data4 = "1110" ELSE -- E
 	       "0111000" WHEN data4 = "1111" ELSE -- F
-	       "0000100" WHEN data4(32 downto 29) = "1000" ELSE -- negative?
+	       "1111110" WHEN data4 = "1000" ELSE -- negative?
 	       "1111111";
 	-- Turn on anode of 7-segment display addressed by 3-bit digit selector dig
 	anode <= 
