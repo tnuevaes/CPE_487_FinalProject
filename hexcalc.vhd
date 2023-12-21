@@ -189,7 +189,7 @@ BEGIN
 					-- Logic for Remainder and Modulo calculation SW1 ON
 						IF (bt_eq = '1' and choice='1') THEN
 							nx_acc <= std_logic_vector(unsigned(acc) rem unsigned(operand));                   --remainder
-							nx_state <= SHOW_RESULT;                                              -- Additional Note: Create new final solved signal, not nx_acc to store larger product of operation
+							nx_state <= SHOW_RESULT;                                             
 						ELSIF (bt_eq = '1'and choice= '0')then
 							nx_acc <= std_logic_vector(unsigned(acc) mod unsigned(operand));                   --Modulo
 							nx_state <= SHOW_RESULT;             

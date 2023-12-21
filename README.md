@@ -24,19 +24,34 @@ I pledge my honor that I have abided by the Stevens Honor System
 #### Addition
 
 - Using the given addition code, the addition being done is hexadecimal addition
-  - Doing addition involves the conversion of the input values from hex to decimal, adding the decimal values, to produce a decimal result
-    - i.e. 5 + 7 = **C** (12)
-    - 25 + 6 = **2b** (37 (25 in dec) + 6 = 43 (2b in dec))
-    - 295 + 15 = **2AA** (661 (295 in dec) + 21(15 in dec) = 682 (2aa in dec))
-    - 3999 + 5 = **399E** (14745 + 5 = 14750 (399E in dec))
-  - The values are input as hex values, converted to decimal, added as decimal, and displayed as hex
+
+```vhdl
+IF (SW0 = '0' AND SW1 = '0') THEN
+    IF (bt_eq = '1' and choice='1') THEN
+      nx_acc <= std_logic_vector(unsigned(acc) + unsigned(operand));
+      nx_state <= SHOW_RESULT;
+```
+
+- Doing addition involves the conversion of the input values from hex to decimal, adding the decimal values, to produce a decimal result
+  - i.e. 5 + 7 = **C** (12)
+  - 25 + 6 = **2b** (37 (25 in dec) + 6 = 43 (2b in dec))
+  - 295 + 15 = **2AA** (661 (295 in dec) + 21(15 in dec) = 682 (2aa in dec))
+  - 3999 + 5 = **399E** (14745 + 5 = 14750 (399E in dec))
+- The values are input as hex values, converted to decimal, added as decimal, and displayed as hex
 
 #### Subtraction
 
 - Using the given subtraction code, the subtraction being done is hexadecimal subtraction
-  - Doing subtraction involves the conversion of the input values from hex to decimal, subtracting the decimal values, to produce a decimal result
-    - i.e. 22 - 3 = 1F
-    - 53 - 5 = **4E** (83 (_53 in dec_) - 5 = 78(4E in dec))
+
+```vhdl
+ELSIF (bt_eq = '1'and choice= '0')then
+  nx_acc <= std_logic_vector(unsigned(acc) - unsigned(operand));                                        
+  nx_state <= SHOW_RESULT;
+```
+
+- Doing subtraction involves the conversion of the input values from hex to decimal, subtracting the decimal values, to produce a decimal result
+  - i.e. 22 - 3 = 1F
+  - 53 - 5 = **4E** (83 (_53 in dec_) - 5 = 78(4E in dec))
 
 #### Multiple Ops
 
@@ -56,15 +71,12 @@ I pledge my honor that I have abided by the Stevens Honor System
     - Switch 0 off, Switch 1 on
       - BTNU = Exponentiation Operation
       - BTND = Modulo Operation
-    - Switch 2 on, Switch 0 and Switch 1 Off
-      - Sqrt
-      - Square
 
 This is utilized in the ENTER_OP case where an IF statement was included to test which switches were toggled.
 
 ### Additional operations
 
-#### _After research on the topic of exponentiation in VHDL, it was found that there are certain difficulties with the operation of exponentiation such that including a function to achieve this operation would not allow the program to synthesize unless the number being exponentiated and the exponent were predetermined at synthesis_
+#### _After research on the topic of exponentiation in VHDL, it was found that there are certain difficulties with the operation of exponentiation such that including a function to achieve this operation would not allow the program to synthesize unless the number being exponentiated and the exponent were predetermined at synthesis. Additionally, the squaring and square root functions could not be implemented due to the nature of multiplication within vhdl_
 
     - Multiplication
     - Division
@@ -83,7 +95,11 @@ This is utilized in the ENTER_OP case where an IF statement was included to test
 - To remedy this problem, we used the resize function included within _STD_LOGIC_VECTOR_ to resize the product of the multiplication before being stored in _acc_
   
 ```vhdl
-nx_acc <= STD_LOGIC_VECTOR(resize(unsigned(nx_acc)*unsigned(operand), 32));
+ELSIF (SW0 = '1' AND SW1 = '0') THEN
+        -- Logic for Multiplication and Division SW0 ON
+          IF (bt_eq = '1' and choice='1') THEN
+            nx_acc <= std_logic_vector(resize(unsigned(acc) * unsigned(operand),nx_acc'length));
+            nx_state <= SHOW_RESULT;
 ```
 
 - Implementing multiplication involves the * operand which does multiplication in the same way as previous operations.
@@ -93,23 +109,53 @@ nx_acc <= STD_LOGIC_VECTOR(resize(unsigned(nx_acc)*unsigned(operand), 32));
 
 #### Division
 
-- Implementing multiplication involves the / operand which does multiplication in the same way as previous operations.
-  - Doing multiplication involves the conversion of the input values from hex to decimal, multiplying  the decimal values, to produce a decimal result
-    - i.e. 25 / 2 = **12** (37 (25 in dec) / 2 = 74 (**12** in dec))
-    - 45 / 5 = **d** (69 / 5 = 13 (**d**  in dec))
+- Implementing division involves the / operand which does multiplication in the same way as previous operations.
+
+```vhdl
+ELSIF (SW0 = '1' AND SW1 = '0') THEN
+-- Logic for Multiplication and Division SW0 ON
+  IF (bt_eq = '1' and choice='1') THEN
+    nx_acc <= std_logic_vector(resize(unsigned(acc) * unsigned(operand),nx_acc'length));
+    nx_state <= SHOW_RESULT;
+  ELSIF (bt_eq = '1'and choice= '0')then
+    nx_acc <= std_logic_vector(unsigned(acc) / unsigned(operand));                                         
+    nx_state <= SHOW_RESULT;
+  ELSIF kp_hit = '1' THEN
+    nx_operand <= operand(27 DOWNTO 0) & kp_value;
+    nx_state <= OP_RELEASE;
+  ELSE nx_state <= ENTER_OP;
+  END IF;
+```
+
+- Doing multiplication involves the conversion of the input values from hex to decimal, multiplying  the decimal values, to produce a decimal result
+  - i.e. 25 / 2 = **12** (37 (25 in dec) / 2 = 74 (**12** in dec))
+  - 45 / 5 = **d** (69 / 5 = 13 (**d**  in dec))
 - Our division implementation truncates results that involve decimal points
 - Because of this function we implemented modulo and remainder to check a division operation for remainders.
 
 #### Modulo / Remainder
 
-- Implementing Modulo and Remainder involves the MOD and REM operand respectively which finds the remainder of a division of two hexadecimal numbers 
-  - Doing multiplication involves the conversion of the input values from hex to decimal, multiplying  the decimal values, to produce a decimal result
-    - i.e. 23 mod 5 = **0** (35 (23 in dec) / 5 = 7, no rem )
-    - 34 rem 8 = **4** (52 (34 in dec)/ 8 = 6.5, rem = 4)
+- Implementing Modulo and Remainder involves the MOD and REM operand respectively which finds the remainder of a division of two hexadecimal numbers
 
-#### Squaring
+```vhdl
+ELSIF (SW0 = '0' AND SW1 = '1') THEN
+        -- Logic for Remainder and Modulo calculation SW1 ON
+          IF (bt_eq = '1' and choice='1') THEN
+            nx_acc <= std_logic_vector(unsigned(acc) rem unsigned(operand));          --remainder
+            nx_state <= SHOW_RESULT;                                              
+          ELSIF (bt_eq = '1'and choice= '0')then
+            nx_acc <= std_logic_vector(unsigned(acc) mod unsigned(operand));           --Modulo
+            nx_state <= SHOW_RESULT;             
+          ELSIF kp_hit = '1' THEN
+            nx_operand <= operand(27 DOWNTO 0) & kp_value;
+            nx_state <= OP_RELEASE;
+          ELSE nx_state <= ENTER_OP;
+          END IF;
+```
 
-- 
+- Doing modulo and remainder involves the conversion of the input values from hex to decimal, multiplying  the decimal values, to produce a decimal result
+  - i.e. 23 mod 5 = **0** (35 (23 in dec) / 5 = 7, no rem )
+  - 34 rem 8 = **4** (52 (34 in dec)/ 8 = 6.5, rem = 4)
 
 ### Running Operations
 
@@ -118,6 +164,22 @@ nx_acc <= STD_LOGIC_VECTOR(resize(unsigned(nx_acc)*unsigned(operand), 32));
 - Within each operation if statement, if kp_hit = '1' then nx_state is set to _OP_RELEASE_ which then goes to _ENTER_OP_ to check for kp_hit = '1'
 - Created additional ELSIF statements in SHOW_RESULT case checking for whether BTNU (choice = '1') or BTND (choice = '0') was pressed after result is shown
 - Set final state in _SHOW_RESULT_ case as the _START_OP_ case to begin new operation using the previous result stored in _nx_acc_
+
+```vhdl
+WHEN SHOW_RESULT => -- display result of addition
+  IF kp_hit = '1' THEN
+    nx_acc <= X"0000000" & kp_value;
+    nx_state <= ACC_RELEASE;
+    -- Change nx_state to OP_RELEASE which then goes to ENTER_OP to check for kp_hit 1
+  ELSIF bt_plus = '1' THEN
+    choice <= '1';
+    nx_state <= START_OP;
+  ELSIF bt_sub = '1' THEN
+    choice <= '0';
+    nx_state <= START_OP; 
+  ELSE nx_state <= SHOW_RESULT;
+```
+
 
 ### Project Summary
 
