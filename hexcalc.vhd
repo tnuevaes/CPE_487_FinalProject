@@ -100,8 +100,8 @@ BEGIN
 		sm_ck_pr : PROCESS (bt_clr, sm_clk) -- state machine clock process
 		BEGIN
 			IF bt_clr = '1' THEN -- reset to known state
-				acc <= X"000000000";  
-				operand <= X"00000000";
+				acc <= std_logic_vector(resize(X"00000000",acc'length));  
+				operand <= std_logic_vector(resize(X"00000000",operand'length));
 				pr_state <= ENTER_ACC;
 			ELSIF rising_edge (sm_clk) THEN -- on rising clock edge
 				pr_state <= nx_state; -- update present state
