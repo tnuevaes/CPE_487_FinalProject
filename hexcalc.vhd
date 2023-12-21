@@ -12,8 +12,7 @@ ENTITY hexcalc IS
 		bt_clr : IN STD_LOGIC; -- calculator "clear" button
 		bt_plus : IN STD_LOGIC; -- calculator "+" button
 		bt_sub : IN STD_LOGIC; -- calculator "-" button
-		bt_eq : IN STD_LOGIC; 
---		bt_neg : IN STD_LOGIC;  --if we decide to implement negation		
+		bt_eq : IN STD_LOGIC;     	
         KB_col : OUT STD_LOGIC_VECTOR (4 DOWNTO 1); -- keypad column pins
 	    KB_row : IN STD_LOGIC_VECTOR (4 DOWNTO 1); -- keypad row pins
 		SW0 : IN STD_LOGIC; -- initializing the first sw
@@ -58,7 +57,7 @@ FUNCTION sqrt (input : UNSIGNED) return UNSIGNED is
        variable left,right,r : UNSIGNED(17 downto 0):=(others => '0');  --input to adder/sub.r-remainder.
        variable i : INTEGER:=0;
     BEGIN
-        FOR i in 0 to 15 LOOP
+        FOR i in 15 to 0 LOOP
             right(0):='1';
             right(1):=r(17);
             right(17 downto 2):=q;
@@ -127,7 +126,7 @@ BEGIN
 		--			   nx_acc <= STD_LOGIC_VECTOR(unsigned(nx_acc)**2);            --squared nx_acc
 					   nx_state <= ENTER_ACC;
 					ELSIF (bt_sub = '1' AND SW2 = '1') THEN                        --check sw2 for sq/sqrt btn functionality
-					   nx_acc <= std_logic_vector(resize(sqrt(unsigned(nx_acc)),nx_acc'length));         -- square root of nx_acc
+				       nx_acc <= std_logic_vector(resize(sqrt(unsigned(nx_acc)),nx_acc'length));         -- square root of nx_acc
 					   nx_state <= ENTER_ACC;
 					ELSIF (bt_plus = '1' AND SW2 = '0') THEN                       -- Choices --check sw2 off to not apply sq/sqrt
 						nx_state <= START_OP;                                      -- FOR PROJECT: Nested if statements for multiple operations
