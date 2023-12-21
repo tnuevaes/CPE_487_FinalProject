@@ -74,7 +74,7 @@ ARCHITECTURE Behavioral OF hexcalc IS
             end if;
             d := shift_right(d, 2);
         end loop;
-        return c(31 downto 0);
+        return c;
     end sqrt;
 
 BEGIN
