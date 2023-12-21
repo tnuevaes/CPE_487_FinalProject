@@ -36,7 +36,7 @@ ARCHITECTURE Behavioral OF hexcalc IS
 	COMPONENT leddec16 IS
 		PORT (
 			dig : IN unsigned (2 DOWNTO 0);
-			data : IN STD_LOGIC_VECTOR (31 DOWNTO 0);
+			data : IN STD_LOGIC_VECTOR (15 DOWNTO 0);
 			anode : OUT STD_LOGIC_VECTOR (7 DOWNTO 0);
 			seg : OUT STD_LOGIC_VECTOR (6 DOWNTO 0)
 		);
@@ -55,7 +55,7 @@ ARCHITECTURE Behavioral OF hexcalc IS
 	
 	--square root function based on non restoring square root algorithm
     FUNCTION sqrt (input : UNSIGNED) return UNSIGNED is
-       variable a : UNSIGNED(31 downto 0):=input;
+       variable a : UNSIGNED(15 downto 0):=input;
        variable q : UNSIGNED(15 downto 0):=(others => '0'); --output
        variable left,right,r : UNSIGNED(17 downto 0):=(others => '0');  --input to adder/sub.r-remainder.
        variable i : INTEGER:=0;
@@ -64,7 +64,7 @@ ARCHITECTURE Behavioral OF hexcalc IS
             right(0):='1';
             right(1):=r(17);
             right(17 downto 2):=q;
-            left(1 downto 0):=a(31 downto 30);
+            left(1 downto 0):=a(15 downto 14);
             left(17 downto 2):=r(15 downto 0);
             a(31 downto 2):=a(29 downto 0);  --shifting by 2 bit.
             if ( r(17) = '1') then
@@ -131,7 +131,7 @@ BEGIN
 		END PROCESS;
 		-- state maching combinatorial process
 		-- determines output of state machine and next state
-		sm_comb_pr : PROCESS (kp_hit, kp_value, bt_plus, bt_sub, bt_eq, acc, operand, pr_state)
+		sm_comb_pr : PROCESS (nx_acc, kp_hit, SW2, kp_value, bt_plus, bt_sub, bt_eq, acc, operand, pr_state)
 		BEGIN
 			nx_acc <= acc; -- Set value of nx_acc to initial keypress
 			nx_operand <= operand; --Set value of nx_operant to value of second operand keypress
