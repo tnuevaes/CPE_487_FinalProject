@@ -14,13 +14,8 @@ ENTITY hexcalc IS
 		bt_plus : IN STD_LOGIC; -- calculator "+" button
 		bt_sub : IN STD_LOGIC; -- calculator "-" button
 		bt_eq : IN STD_LOGIC; 
-<<<<<<< Updated upstream
---		bt_neg : IN STD_LOGIC;  --if we decide to implement negation
-		KB_col : OUT STD_LOGIC_VECTOR (4 DOWNTO 1); -- keypad column pins
-=======
 		bt_neg : IN STD_LOGIC;  -- negation		
         KB_col : OUT STD_LOGIC_VECTOR (4 DOWNTO 1); -- keypad column pins
->>>>>>> Stashed changes
 	    KB_row : IN STD_LOGIC_VECTOR (4 DOWNTO 1); -- keypad row pins
 		SW0 : IN STD_LOGIC; -- initializing the first sw
 		SW1 : IN STD_LOGIC; -- initializing the second sw
@@ -134,17 +129,11 @@ BEGIN
                             nx_acc <= std_logic_vector(signed(acc));
                         end if;                     
 					ELSIF (bt_plus = '1' AND SW2 = '1') THEN                       --check SW2 for sq/sqrt btn functionality
-<<<<<<< Updated upstream
-					   nx_acc <= STD_LOGIC_VECTOR(unsigned(nx_acc)**2);            --squared nx_acc
-					   nx_state <= ENTER_ACC;
-					ELSIF (bt_sub = '1' AND SW2 = '1') THEN                        --check sw2 for sq/sqrt btn functionality
-					   nx_acc <= STD_LOGIC_VECTOR(sqrt(unsigned(nx_acc)));         -- square root of nx_acc
-=======
+
 					   nx_acc <= STD_LOGIC_VECTOR(signed(nx_acc)*signed(nx_acc));            --squared nx_acc
 					   nx_state <= ENTER_ACC;
 					ELSIF (bt_sub = '1' AND SW2 = '1') THEN                        --check sw2 for sq/sqrt btn functionality
 		--			   nx_acc <= std_logic_vector(resize(sqrt(unsigned(nx_acc)),nx_acc'length));         -- square root of nx_acc
->>>>>>> Stashed changes
 					   nx_state <= ENTER_ACC;
 					ELSIF (bt_plus = '1' AND SW2 = '0') THEN                       -- Choices --check sw2 off to not apply sq/sqrt
 						nx_state <= START_OP;                                      -- FOR PROJECT: Nested if statements for multiple operations
@@ -198,12 +187,9 @@ BEGIN
 					ELSIF (SW0 = '1' AND SW1 = '0') THEN
 					-- Logic for Multiplication and Division SW0 ON
 						IF (bt_eq = '1' and choice='1') THEN
-<<<<<<< Updated upstream
-							nx_acc <= std_logic_vector(resize(unsigned(acc) * unsigned(operand), 32));
-=======
 							nx_acc <= std_logic_vector(resize(signed(acc) * signed(operand),nx_acc'length));
 		                    --nx_acc <= std_logic_vector(multi(acc,operand));    --custom multiplication function attempt
->>>>>>> Stashed changes
+
 							nx_state <= SHOW_RESULT;
 						ELSIF (bt_eq = '1'and choice= '0')then
 							nx_acc <= std_logic_vector(signed(acc) / signed(operand));                                         
@@ -229,15 +215,7 @@ BEGIN
 					ELSIF (SW2 = '1') THEN
 					-- logic for squares and square root functions when SW2 ON
 					   IF (bt_plus = '1') THEN
-<<<<<<< Updated upstream
-							nx_operand <= STD_LOGIC_VECTOR(unsigned(nx_operand)**2);             --squares the operand
-							nx_state <= ENTER_OP;
-					   ELSIF (bt_sub = '1')then
-							nx_operand <= STD_LOGIC_VECTOR(sqrt(unsigned(nx_operand)));                --square root of the operand                                         
-							nx_state <= ENTER_OP;
-					   ELSIF kp_hit = '1' THEN
-							nx_operand <= operand(11 DOWNTO 0) & kp_value;
-=======
+
 							nx_operand <= STD_LOGIC_VECTOR(signed(nx_operand)*signed(nx_operand));             --squares the operand
 							nx_state <= ENTER_OP;
 					   ELSIF (bt_sub = '1')then
@@ -245,7 +223,6 @@ BEGIN
 							nx_state <= ENTER_OP;
 					   ELSIF kp_hit = '1' THEN
 							nx_operand <= operand(28 DOWNTO 0) & kp_value;
->>>>>>> Stashed changes
 							nx_state <= OP_RELEASE;
 						ELSE nx_state <= ENTER_OP;
 						END IF;
