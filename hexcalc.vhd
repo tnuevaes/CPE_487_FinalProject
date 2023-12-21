@@ -17,7 +17,9 @@ ENTITY hexcalc IS
 	    KB_row : IN STD_LOGIC_VECTOR (4 DOWNTO 1); -- keypad row pins
 		sw3 : IN STD_LOGIC; -- initializing the first sw
 		SW1 : IN STD_LOGIC; -- initializing the second sw
-		sw2 : IN STD_LOGIC); -- initializing the third sw
+		sw2 : IN STD_LOGIC; -- initializing the third sw
+		sw0 : IN STD_LOGIC); -- initializing the third sw
+
 
 END hexcalc;
 
@@ -51,29 +53,29 @@ ARCHITECTURE Behavioral OF hexcalc IS
 	SIGNAL pr_state, nx_state : state; -- present and next states
 	SIGNAL choice: STD_LOGIC;
 
-FUNCTION sqrt (input : UNSIGNED) return UNSIGNED is
-       variable a : UNSIGNED(31 downto 0):=input;
-       variable q : UNSIGNED(15 downto 0):=(others => '0'); --output
-       variable left,right,r : UNSIGNED(17 downto 0):=(others => '0');  --input to adder/sub.r-remainder.
-       variable i : INTEGER:=0;
-    BEGIN
-        FOR i in 15 to 0 LOOP
-            right(0):='1';
-            right(1):=r(17);
-            right(17 downto 2):=q;
-            left(1 downto 0):=a(31 downto 30);
-            left(17 downto 2):=r(15 downto 0);
-            a(31 downto 2):=a(29 downto 0);  --shifting by 2 bit.
-            if ( r(17) = '1') then
-                r := left + right;
-            else
-                r := left - right;
-            end if;
-            q(15 downto 1) := q(14 downto 0);
-            q(0) := not r(17);
-        END LOOP;
-        return q;
-    END FUNCTION sqrt;
+--FUNCTION sqrt (input : UNSIGNED) return UNSIGNED is
+--       variable a : UNSIGNED(31 downto 0):=input;
+--       variable q : UNSIGNED(15 downto 0):=(others => '0'); --output
+--       variable left,right,r : UNSIGNED(17 downto 0):=(others => '0');  --input to adder/sub.r-remainder.
+--       variable i : INTEGER:=0;
+--    BEGIN
+--        FOR i in 15 to 0 LOOP
+--            right(0):='1';
+--            right(1):=r(17);
+--            right(17 downto 2):=q;
+--            left(1 downto 0):=a(31 downto 30);
+--            left(17 downto 2):=r(15 downto 0);
+--            a(31 downto 2):=a(29 downto 0);  --shifting by 2 bit.
+--            if ( r(17) = '1') then
+--                r := left + right;
+--            else
+--                r := left - right;
+--            end if;
+--            q(15 downto 1) := q(14 downto 0);
+--            q(0) := not r(17);
+--        END LOOP;
+--        return q;
+--    END FUNCTION sqrt;
     
 
   
@@ -121,17 +123,12 @@ BEGIN
 					--Keep same logic
 					IF kp_hit = '1' THEN
 						nx_acc <= acc(27 DOWNTO 0) & kp_value; -- Set nx_acc to value of full number operand
-						nx_state <= ACC_RELEASE;
-					ELSIF (bt_plus = '1' AND sw2 = '1') THEN                       --check sw2 for sq/sqrt btn functionality
-		--			   nx_acc <= STD_LOGIC_VECTOR(unsigned(nx_acc)**2);            --squared nx_acc
+						nx_state <= ACC_RELEASE;         --squared nx_acc
 					   nx_state <= ENTER_ACC;
-					ELSIF (bt_sub = '1' AND sw2 = '1') THEN                        --check sw2 for sq/sqrt btn functionality
-				       nx_acc <= std_logic_vector(resize(sqrt(unsigned(nx_acc)),nx_acc'length));         -- square root of nx_acc
-					   nx_state <= ENTER_ACC;
-					ELSIF (bt_plus = '1' AND sw2 = '0') THEN                       -- Choices --check sw2 off to not apply sq/sqrt
+					ELSIF (bt_plus = '1') THEN                       -- Choices --check sw2 off to not apply sq/sqrt
 						nx_state <= START_OP;                                      -- FOR PROJECT: Nested if statements for multiple operations
 						choice <= '1';
-					ELSIF (bt_sub ='1' AND sw2 = '0') THEN                         -- Choices  --check sw2 off to not apply sq/sqrt
+					ELSIF (bt_sub ='1') THEN                         -- Choices  --check sw2 off to not apply sq/sqrt
 					   nx_state <= START_OP;
 					   choice <='0';
 					ELSE
@@ -194,19 +191,6 @@ BEGIN
 							nx_acc <= std_logic_vector(unsigned(acc) mod unsigned(operand));                   --Modulo
 							nx_state <= SHOW_RESULT;             
 						ELSIF kp_hit = '1' THEN
-							nx_operand <= operand(27 DOWNTO 0) & kp_value;
-							nx_state <= OP_RELEASE;
-						ELSE nx_state <= ENTER_OP;
-						END IF;
-					ELSIF (sw2 = '1') THEN
-					-- logic for squares and square root functions when sw2 ON
-					   IF (bt_plus = '1') THEN
-			--				nx_operand <= STD_LOGIC_VECTOR(unsigned(nx_operand)**2);             --squares the operand
-							nx_state <= ENTER_OP;
-					   ELSIF (bt_sub = '1')then
-							nx_operand <=  std_logic_vector(resize(sqrt(unsigned(operand)),nx_acc'length));                  --square root of the operand                                         
-							nx_state <= ENTER_OP;
-					   ELSIF kp_hit = '1' THEN
 							nx_operand <= operand(27 DOWNTO 0) & kp_value;
 							nx_state <= OP_RELEASE;
 						ELSE nx_state <= ENTER_OP;
