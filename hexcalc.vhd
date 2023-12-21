@@ -1,7 +1,6 @@
 LIBRARY IEEE;
 USE IEEE.STD_LOGIC_1164.ALL;
 USE IEEE.NUMERIC_STD.ALL;
---use IEEE.math_real.all;
 
 
 
@@ -54,23 +53,21 @@ ARCHITECTURE Behavioral OF hexcalc IS
 	SIGNAL choice: STD_LOGIC;
 	
 	--square root function based on non restoring square root algorithm
-    FUNCTION sqrt (input : UNSIGNED) return UNSIGNED is
-       variable a : UNSIGNED(31 downto 0):=input;
-       variable q : UNSIGNED(15 downto 0):=(others => '0'); --output
-       variable left,right,r : UNSIGNED(17 downto 0):=(others => '0');  --input to adder/sub.r-remainder.
-       variable i : INTEGER:=0;
-    BEGIN
-        FOR i in 0 to 15 LOOP
-            right(0):='1';
-            right(1):=r(17);
-            right(17 downto 2):=q;
-            left(1 downto 0):=a(31 downto 30);
-            left(17 downto 2):=r(15 downto 0);
-            a(31 downto 2):=a(29 downto 0);  --shifting by 2 bit.
-            if ( r(17) = '1') then
-                r := left + right;
+    function sqrt(n : unsigned) return unsigned is
+        variable x : integer := 0;
+        variable c, d:unsigned(31 downto 0);
+    begin
+        x := to_integer(n);
+        d := shift_left(to_unsigned(1, 32), 30);  -- The second-to-top bit is set.
+        while d > x loop
+            d := shift_right(d, 2);
+        end loop;
+        while d /= 0 loop
+            if x >= to_integer(c) + to_integer(d) then
+                x := x - to_integer(c) - to_integer(d);
+                c := shift_right(c, 1) + to_integer(d);
             else
-                r := left - right;
+                c := shift_right(c, 1);
             end if;
             q(15 downto 1) := q(14 downto 0);
             q(0) := not r(17);
@@ -79,23 +76,7 @@ ARCHITECTURE Behavioral OF hexcalc IS
     END FUNCTION sqrt;
     
     
---    function mult(input1,input2:std_logic_vector) return unsigned is
---        variable in1:unsigned(input1'length-1 downto 0):=unsigned(input1);
---        variable in2:unsigned(input2'length-1 downto 0):=unsigned(input2);
---        variable result:unsigned(input1'length+input2'length-1 downto 0);
---        variable i:integer:=TO_INTEGER(in1);  --using as constant hopefully
---        variable max_value:integer:=65500;  --max hex value is FFFF
---    BEGIN
---        FOR i in 0 to max_value loop
---            if(TO_INTEGER(in2) > max_value) then
---                exit;
---          else
---                exit when i = TO_INTEGER(in2);
---          end if;
---            result := result + in1;
---        end loop;
---        return result;
---    end function mult;  
+
   
 BEGIN
 	ck_proc : PROCESS (clk_50MHz)
@@ -146,7 +127,7 @@ BEGIN
 		--			   nx_acc <= STD_LOGIC_VECTOR(unsigned(nx_acc)**2);            --squared nx_acc
 					   nx_state <= ENTER_ACC;
 					ELSIF (bt_sub = '1' AND SW2 = '1') THEN                        --check sw2 for sq/sqrt btn functionality
-					   nx_acc <= STD_LOGIC_VECTOR(RESIZE(sqrt(unsigned(nx_acc)),nx_acc'length));         -- square root of nx_acc
+					   nx_acc <= STD_LOGIC_VECTOR(sqrt(unsigned(nx_acc)));         -- square root of nx_acc
 					   nx_state <= ENTER_ACC;
 					ELSIF (bt_plus = '1' AND SW2 = '0') THEN                       -- Choices --check sw2 off to not apply sq/sqrt
 						nx_state <= START_OP;                                      -- FOR PROJECT: Nested if statements for multiple operations
@@ -195,7 +176,7 @@ BEGIN
 					-- Logic for Multiplication and Division SW0 ON
 						IF (bt_eq = '1' and choice='1') THEN
 							nx_acc <= std_logic_vector(resize(unsigned(acc) * unsigned(operand),nx_acc'length));
-		--                  nx_acc <= std_logic_vector(mult(acc,operand));    --custom multiplication function attempt
+		                    --nx_acc <= std_logic_vector(multi(acc,operand));    --custom multiplication function attempt
 							nx_state <= SHOW_RESULT;
 						ELSIF (bt_eq = '1'and choice= '0')then
 							nx_acc <= std_logic_vector(unsigned(acc) / unsigned(operand));                                         
@@ -224,7 +205,7 @@ BEGIN
 			--				nx_operand <= STD_LOGIC_VECTOR(unsigned(nx_operand)**2);             --squares the operand
 							nx_state <= ENTER_OP;
 					   ELSIF (bt_sub = '1')then
-							nx_operand <= STD_LOGIC_VECTOR(RESIZE(sqrt(unsigned(nx_operand)),nx_acc'length));                --square root of the operand                                         
+							nx_operand <= STD_LOGIC_VECTOR(sqrt(unsigned(nx_operand)));                --square root of the operand                                         
 							nx_state <= ENTER_OP;
 					   ELSIF kp_hit = '1' THEN
 							nx_operand <= operand(27 DOWNTO 0) & kp_value;
