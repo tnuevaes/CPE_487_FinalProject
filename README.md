@@ -22,7 +22,7 @@ I pledge my honor that I have abided by the Stevens Honor System
 ### Base operations
 ![image](https://github.com/tnuevaes/CPE_487_FinalProject/assets/78048229/43732802-dbbe-4d61-9f02-8b0a23952d21)
 Utilizing the already made FSM from Lab 4 we modified the model to perform run on operations by listensing for the bt_plus and bt_sub inputs.
-With this the logic to reset the acc value was subverted and we were able to continuosly perform operations
+With this, the logic to reset the acc value was subverted and we were able to continuosly perform operations
 
 #### Addition
 
