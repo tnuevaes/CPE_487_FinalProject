@@ -4,6 +4,8 @@
 
 I pledge my honor that I have abided by the Stevens Honor System
 
+**FOR PRESENTATION, SW0 WAS SWITCHED TO SW3 DUE TO HARDWARE ISSUES**
+
 ### Project Scope
 
 - Study Lab 4 base code for calculator
