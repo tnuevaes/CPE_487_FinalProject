@@ -49,9 +49,12 @@ ARCHITECTURE Behavioral OF hexcalc IS
 	SIGNAL display : std_logic_vector (31 DOWNTO 0); -- value to be displayed
 	SIGNAL led_mpx : unsigned (2 DOWNTO 0); -- 7-seg multiplexing clock
 	TYPE state IS (ENTER_ACC, ACC_RELEASE, START_OP, OP_RELEASE, 
-	ENTER_OP, SHOW_RESULT); -- state machine states
+	ENTER_OP,FIX_SUM, SHOW_RESULT); -- state machine states
 	SIGNAL pr_state, nx_state : state; -- present and next states
 	SIGNAL choice: STD_LOGIC;
+	SIGNAL temp_sum1:std_logic_vector(31 downto 0);
+	SIGNAL temp_sum2:std_logic_vector(31 downto 0);
+	SIGNAL temp_sum3:std_logic_vector(31 downto 0);
 	
 	--square root function based on non restoring square root algorithm
     FUNCTION sqrt (input : UNSIGNED) return UNSIGNED is
@@ -79,23 +82,23 @@ ARCHITECTURE Behavioral OF hexcalc IS
     END FUNCTION sqrt;
     
     
-    function multi(input1,input2:std_logic_vector) return unsigned is
-        variable in1:unsigned(input1'length-1 downto 0):=unsigned(input1);
-        variable in2:unsigned(input2'length-1 downto 0):=unsigned(input2);
-        variable result:unsigned(input1'length+input2'length-1 downto 0);
-        variable i:integer:=TO_INTEGER(in1);  --using as constant hopefully
-        variable max_value:integer:=65535;  --max hex value is FFFF
-    BEGIN
-        FOR i in 1 to max_value loop
-            if(TO_INTEGER(in2) > max_value) then
-                exit;
-          else
-                exit when i = TO_INTEGER(in2);
-          end if;
-            result := result + in1;
-        end loop;
-        return result;
-    end function multi;  
+--    function mult(input1,input2:std_logic_vector) return unsigned is
+--        variable in1:unsigned(input1'length-1 downto 0):=unsigned(input1);
+--        variable in2:unsigned(input2'length-1 downto 0):=unsigned(input2);
+--        variable result:unsigned(input1'length+input2'length-1 downto 0);
+--        variable i:integer:=TO_INTEGER(in1);  --using as constant hopefully
+--        variable max_value:integer:=65500;  --max hex value is FFFF
+--    BEGIN
+--        FOR i in 0 to max_value loop
+--            if(TO_INTEGER(in2) > max_value) then
+--                exit;
+--          else
+--                exit when i = TO_INTEGER(in2);
+--          end if;
+--            result := result + in1;
+--        end loop;
+--        return result;
+--    end function mult;  
   
 BEGIN
 	ck_proc : PROCESS (clk_50MHz)
@@ -143,7 +146,7 @@ BEGIN
 						nx_acc <= acc(27 DOWNTO 0) & kp_value; -- Set nx_acc to value of full number operand
 						nx_state <= ACC_RELEASE;
 					ELSIF (bt_plus = '1' AND SW2 = '1') THEN                       --check SW2 for sq/sqrt btn functionality
-		--			   nx_acc <= STD_LOGIC_VECTOR(unsigned(nx_acc)**2);            --squared nx_acc
+					   nx_acc <= STD_LOGIC_VECTOR(resize(unsigned(nx_acc)*unsigned(nx_acc),nx_acc'length));            --squared nx_acc
 					   nx_state <= ENTER_ACC;
 					ELSIF (bt_sub = '1' AND SW2 = '1') THEN                        --check sw2 for sq/sqrt btn functionality
 					   nx_acc <= STD_LOGIC_VECTOR(RESIZE(sqrt(unsigned(nx_acc)),nx_acc'length));         -- square root of nx_acc
@@ -194,8 +197,8 @@ BEGIN
 					ELSIF (SW0 = '1' AND SW1 = '0') THEN
 					-- Logic for Multiplication and Division SW0 ON
 						IF (bt_eq = '1' and choice='1') THEN
-		--					nx_acc <= std_logic_vector(resize(unsigned(acc) * unsigned(operand),nx_acc'length));
-		                    nx_acc <= std_logic_vector(multi(acc,operand));    --custom multiplication function attempt
+							nx_acc <= std_logic_vector(resize(unsigned(acc) * unsigned(operand),nx_acc'length));
+		--                  nx_acc <= std_logic_vector(mult(acc,operand));    --custom multiplication function attempt
 							nx_state <= SHOW_RESULT;
 						ELSIF (bt_eq = '1'and choice= '0')then
 							nx_acc <= std_logic_vector(unsigned(acc) / unsigned(operand));                                         
@@ -221,7 +224,7 @@ BEGIN
 					ELSIF (SW2 = '1') THEN
 					-- logic for squares and square root functions when SW2 ON
 					   IF (bt_plus = '1') THEN
-			--				nx_operand <= STD_LOGIC_VECTOR(unsigned(nx_operand)**2);             --squares the operand
+							nx_operand <= STD_LOGIC_VECTOR(resize(unsigned(nx_operand)*unsigned(nx_operand),nx_operand'length));             --squares the operand
 							nx_state <= ENTER_OP;
 					   ELSIF (bt_sub = '1')then
 							nx_operand <= STD_LOGIC_VECTOR(RESIZE(sqrt(unsigned(nx_operand)),nx_acc'length));                --square root of the operand                                         
@@ -232,9 +235,15 @@ BEGIN
 						ELSE nx_state <= ENTER_OP;
 						END IF;
 					END IF;
+			    WHEN FIX_SUM =>
+                    temp_sum1 <= nx_acc(3 downto 0);
+                    temp_sum2 <= nx_acc(7 downto 4);
+                    temp_sum3 <= nx_acc(11 downto 8);
+                    
 				WHEN SHOW_RESULT => -- display result of addition
 					IF kp_hit = '1' THEN
 						nx_acc <= X"0000000" & kp_value;
+						operand <=X"00000000";
 						nx_state <= ACC_RELEASE;
 						-- Change nx_state to OP_RELEASE which then goes to ENTER_OP to check for kp_hit 1
 					ELSIF bt_plus = '1' THEN
