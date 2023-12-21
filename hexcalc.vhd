@@ -100,7 +100,7 @@ BEGIN
 		sm_ck_pr : PROCESS (bt_clr, sm_clk) -- state machine clock process
 		BEGIN
 			IF bt_clr = '1' THEN -- reset to known state
-				acc <= X"00000000";  
+				acc <= X"000000000";  
 				operand <= X"00000000";
 				pr_state <= ENTER_ACC;
 			ELSIF rising_edge (sm_clk) THEN -- on rising clock edge
