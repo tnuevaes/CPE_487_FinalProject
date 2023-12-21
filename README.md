@@ -24,6 +24,9 @@ I pledge my honor that I have abided by the Stevens Honor System
 Utilizing the already made FSM from Lab 4 we modified the model to perform run on operations by listensing for the bt_plus and bt_sub inputs in the Show_Result stage.
 With this, the logic to reset the acc value was subverted and we were able to continuosly perform operations
 
+- Files Modified:
+  - Hexcalc.vhd
+
 #### Addition
 
 - Using the given addition code, the addition being done is hexadecimal addition
