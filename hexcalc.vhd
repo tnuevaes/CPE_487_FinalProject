@@ -15,9 +15,9 @@ ENTITY hexcalc IS
 		bt_eq : IN STD_LOGIC;     	
         KB_col : OUT STD_LOGIC_VECTOR (4 DOWNTO 1); -- keypad column pins
 	    KB_row : IN STD_LOGIC_VECTOR (4 DOWNTO 1); -- keypad row pins
-		SW0 : IN STD_LOGIC; -- initializing the first sw
+		sw3 : IN STD_LOGIC; -- initializing the first sw
 		SW1 : IN STD_LOGIC; -- initializing the second sw
-		SW3 : IN STD_LOGIC); -- initializing the third sw
+		sw2 : IN STD_LOGIC); -- initializing the third sw
 
 END hexcalc;
 
@@ -111,7 +111,7 @@ BEGIN
 		END PROCESS;
 		-- state maching combinatorial process
 		-- determines output of state machine and next state
-		sm_comb_pr : PROCESS (kp_hit, kp_value, bt_plus, bt_sub, bt_eq, acc, operand, pr_state, SW3, nx_acc )
+		sm_comb_pr : PROCESS (kp_hit, kp_value, bt_plus, bt_sub, bt_eq, acc, operand, pr_state, sw2, nx_acc )
 		BEGIN
 			nx_acc <= acc; -- Set value of nx_acc to initial keypress
 			nx_operand <= operand; --Set value of nx_operant to value of second operand keypress
@@ -122,16 +122,16 @@ BEGIN
 					IF kp_hit = '1' THEN
 						nx_acc <= acc(27 DOWNTO 0) & kp_value; -- Set nx_acc to value of full number operand
 						nx_state <= ACC_RELEASE;
-					ELSIF (bt_plus = '1' AND SW3 = '1') THEN                       --check SW3 for sq/sqrt btn functionality
+					ELSIF (bt_plus = '1' AND sw2 = '1') THEN                       --check sw2 for sq/sqrt btn functionality
 		--			   nx_acc <= STD_LOGIC_VECTOR(unsigned(nx_acc)**2);            --squared nx_acc
 					   nx_state <= ENTER_ACC;
-					ELSIF (bt_sub = '1' AND SW3 = '1') THEN                        --check SW3 for sq/sqrt btn functionality
+					ELSIF (bt_sub = '1' AND sw2 = '1') THEN                        --check sw2 for sq/sqrt btn functionality
 				       nx_acc <= std_logic_vector(resize(sqrt(unsigned(nx_acc)),nx_acc'length));         -- square root of nx_acc
 					   nx_state <= ENTER_ACC;
-					ELSIF (bt_plus = '1' AND SW3 = '0') THEN                       -- Choices --check SW3 off to not apply sq/sqrt
+					ELSIF (bt_plus = '1' AND sw2 = '0') THEN                       -- Choices --check sw2 off to not apply sq/sqrt
 						nx_state <= START_OP;                                      -- FOR PROJECT: Nested if statements for multiple operations
 						choice <= '1';
-					ELSIF (bt_sub ='1' AND SW3 = '0') THEN                         -- Choices  --check SW3 off to not apply sq/sqrt
+					ELSIF (bt_sub ='1' AND sw2 = '0') THEN                         -- Choices  --check sw2 off to not apply sq/sqrt
 					   nx_state <= START_OP;
 					   choice <='0';
 					ELSE
@@ -157,9 +157,9 @@ BEGIN
 					END IF;
 				WHEN ENTER_OP => -- waiting for next digit in 2nd operand
 					display <= operand;
-					-- Only need to check here for SW0 and SW1 since we can use choice for different calculations
+					-- Only need to check here for sw3 and SW1 since we can use choice for different calculations
 					-- Logic for Addition and Subtraction no switches on
-					IF (SW0 = '0' AND SW1 = '0') THEN
+					IF (sw3 = '0' AND SW1 = '0') THEN
 						IF (bt_eq = '1' and choice='1') THEN
 							nx_acc <= std_logic_vector(unsigned(acc) + unsigned(operand));
 							nx_state <= SHOW_RESULT;
@@ -171,8 +171,8 @@ BEGIN
 							nx_state <= OP_RELEASE;
 						ELSE nx_state <= ENTER_OP;
 						END IF;
-					ELSIF (SW0 = '1' AND SW1 = '0') THEN
-					-- Logic for Multiplication and Division SW0 ON
+					ELSIF (sw3 = '1' AND SW1 = '0') THEN
+					-- Logic for Multiplication and Division sw3 ON
 						IF (bt_eq = '1' and choice='1') THEN
 							nx_acc <= std_logic_vector(resize(unsigned(acc) * unsigned(operand),nx_acc'length));
 		                    --nx_acc <= std_logic_vector(multi(acc,operand));    --custom multiplication function attempt
@@ -185,7 +185,7 @@ BEGIN
 							nx_state <= OP_RELEASE;
 						ELSE nx_state <= ENTER_OP;
 						END IF;
-					ELSIF (SW0 = '0' AND SW1 = '1') THEN
+					ELSIF (sw3 = '0' AND SW1 = '1') THEN
 					-- Logic for Remainder and Modulo calculation SW1 ON
 						IF (bt_eq = '1' and choice='1') THEN
 							nx_acc <= std_logic_vector(unsigned(acc) rem unsigned(operand));                   --remainder
@@ -198,8 +198,8 @@ BEGIN
 							nx_state <= OP_RELEASE;
 						ELSE nx_state <= ENTER_OP;
 						END IF;
-					ELSIF (SW3 = '1') THEN
-					-- logic for squares and square root functions when SW3 ON
+					ELSIF (sw2 = '1') THEN
+					-- logic for squares and square root functions when sw2 ON
 					   IF (bt_plus = '1') THEN
 			--				nx_operand <= STD_LOGIC_VECTOR(unsigned(nx_operand)**2);             --squares the operand
 							nx_state <= ENTER_OP;
