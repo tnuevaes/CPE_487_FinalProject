@@ -3,7 +3,7 @@
 ## Teddy Nueva Espana, Sakthi Jayaraman, Jack Jimenez
 
 I pledge my honor that I have abided by the Stevens Honor System
-CPE 487 Final Project
+### CPE 487 Final Project
 
 ### Project Scope
 
