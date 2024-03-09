@@ -1,4 +1,4 @@
-# CPE_487_FinalProject
+# Higher Function Hex Calculator
 
 ## Teddy Nueva Espana, Sakthi Jayaraman, Jack Jimenez
 
